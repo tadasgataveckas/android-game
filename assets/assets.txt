@@ -1,0 +1,4 @@
+orig/pack.atlas
+orig/pack.png
+project.dt
+scenes/MainScene.dt
