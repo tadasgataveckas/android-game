@@ -2,13 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/homeNavMenu"
+        android:id="@+id/profileNavMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/baseline_account_box_24"
         android:title="Profile" />
     <item
-        android:id="@+id/profileNavMenu"
+        android:id="@+id/homeNavMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/baseline_home_24"
