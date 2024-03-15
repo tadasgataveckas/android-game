@@ -12,6 +12,9 @@ import com.example.audiobook_app.R;
 
 import java.util.ArrayList;
 
+/**
+ * Example activity to use the carousel
+ */
 public class CarouselActivity extends AppCompatActivity {
 
     private RecyclerView.Adapter adapterBookList;

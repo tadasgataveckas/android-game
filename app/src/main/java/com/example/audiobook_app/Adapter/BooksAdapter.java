@@ -17,6 +17,10 @@ import com.example.audiobook_app.R;
 
 import java.util.ArrayList;
 
+
+/**
+ * Translates Books domain data to view activity
+ */
 public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.Viewholder> {
 
     ArrayList<BooksDomain> items;
@@ -35,6 +39,7 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.Viewholder> 
         return new Viewholder(inflator);
     }
 
+    //Using Glide api to load images from drawable for smooth scrolling
     @Override
     public void onBindViewHolder(@NonNull BooksAdapter.Viewholder holder, int position) {
         holder.title.setText(items.get(position).getTitle());

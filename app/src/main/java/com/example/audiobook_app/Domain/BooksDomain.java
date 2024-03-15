@@ -1,5 +1,8 @@
 package com.example.audiobook_app.Domain;
 
+/**
+ * Carousel book data
+ */
 public class BooksDomain {
     private String title;
     private String author;
