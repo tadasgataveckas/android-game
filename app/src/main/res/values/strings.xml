@@ -11,9 +11,17 @@
     <string name="home">Home screen</string>
     <string name="profile">Profile screen</string>
     <string name="search">Type here</string>
-    <string name="lorem_ipsum">
+    <string name="cover"> coverString </string>
+    <string name="booktitle">booktitleString</string>
+    <string name="bookdescription"> bookdescriptionString </string>
+    <string name="author">authornameString</string>
+    <string name="description">descriptionString</string>
+    <string name="timeline">timelineString</string>
+    <string name="back">playerBackString</string>
+    <string name="stop">playerStopString</string>
+    <string name="skip">playerSkipString</string>
 
-    </string>
+        timeline back stop  skip
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -17,7 +17,7 @@
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
-        android:name="com.example.audiobook_app.SecondFragment"
+        android:name="com.example.audiobook_app.BookViewFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_second">
 
@@ -27,7 +27,7 @@
     </fragment>
     <fragment
         android:id="@+id/ThirdFragment"
-        android:name="com.example.audiobook_app.SecondFragment"
+        android:name="com.example.audiobook_app.BookViewFragment"
         android:label="@string/third_fragment_label"
         tools:layout="@layout/fragment_second">
 
