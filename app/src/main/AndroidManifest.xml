@@ -13,6 +13,9 @@
         android:theme="@style/Theme.Audiobookapp"
         tools:targetApi="31">
         <activity
+            android:name=".activity_detail_book"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
