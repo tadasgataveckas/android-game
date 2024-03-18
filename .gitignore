@@ -13,7 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
-gradle.properties
 .gradle/config.properties
 /.gradle
 .idea/workspace.xml
