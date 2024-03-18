@@ -15,16 +15,17 @@
         <activity
             android:name=".Activity.CarouselActivity"
             android:exported="true" > <!-- Make sure exported is set to true -->
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.Audiobookapp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:exported="false"
-            android:label="@string/title_activity_main"
-            android:theme="@style/Theme.Audiobookapp" />
     </application>
 
 </manifest>

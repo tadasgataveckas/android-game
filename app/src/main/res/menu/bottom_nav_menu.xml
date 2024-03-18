@@ -14,6 +14,12 @@
         android:icon="@drawable/baseline_home_24"
         android:title="Home" />
     <item
+        android:id="@+id/playerNavMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/baseline_app_settings_alt_24"
+        android:title="Player" />
+    <item
         android:id="@+id/settingsNavMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

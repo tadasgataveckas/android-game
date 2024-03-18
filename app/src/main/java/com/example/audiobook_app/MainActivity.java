@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         replaceFragment( new HomeFragment());
+        binding.bottomNavigationView.setSelectedItemId(R.id.homeNavMenu); // Set homeNavMenu as selected
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             if(item.getItemId() == R.id.homeNavMenu) {
                 replaceFragment(new HomeFragment());
@@ -40,10 +41,11 @@ public class MainActivity extends AppCompatActivity {
             else if (item.getItemId() == R.id.settingsNavMenu){
                 replaceFragment(new SettingsFragment());
             }
+            else if (item.getItemId() == R.id.playerNavMenu){
+                replaceFragment(new AudioplayerFragment());
+            }
             return true;
         });
-
-
     }
 
     @Override
