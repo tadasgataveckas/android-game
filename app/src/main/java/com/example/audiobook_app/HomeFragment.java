@@ -9,11 +9,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.example.audiobook_app.Activity.CarouselActivity;
 import com.example.audiobook_app.Adapter.BooksAdapter;
-import com.example.audiobook_app.Domain.BooksDomain;
+import com.example.audiobook_app.Adapter.ClickListener;
+import com.example.audiobook_app.Domain.Book;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -80,16 +84,45 @@ public class HomeFragment extends Fragment {
 
 
     private void initRecyclerView() {
-        ArrayList<BooksDomain> items = new ArrayList<>();
-        items.add(new BooksDomain("Soul", "Olivia Wilson", "@drawable/b1"));
-        items.add(new BooksDomain("Harry Potter", "J.K. Rowling", "@drawable/b2"));
-        items.add(new BooksDomain("A Million To One", "Tony Faggioli", "@drawable/b3"));
-        items.add(new BooksDomain("Educated", "Tara Westover", "@drawable/b4"));
+        ArrayList<Book> items = new ArrayList<>();
+        items.add(new Book("Soul", "Olivia Wilson", "@drawable/b1"));
+        items.add(new Book("Harry Potter", "J.K. Rowling", "@drawable/b2"));
+        items.add(new Book("A Million To One", "Tony Faggioli", "@drawable/b3"));
+        items.add(new Book("Educated", "Tara Westover", "@drawable/b4"));
 
-        //recyclerViewBooks =findViewById(R.id.view1);
+//        recyclerViewBooks =findViewById(R.id.view1);
         recyclerViewBooks.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
         adapterBookList = new BooksAdapter(items);
+
+
+        ((BooksAdapter) adapterBookList).setOnItemClickListener(new ClickListener<Book>(){
+            @Override
+            public void onItemClick(Book data) {
+                // Create a new instance of the fragment
+                BookViewFragment fragment = new BookViewFragment();
+
+                // Create a bundle to pass the book data
+                Bundle bundle = new Bundle();
+                bundle.putString("title", data.getTitle());
+                bundle.putString("author", data.getAuthor());
+                bundle.putString("picAddress", data.getPicAddress());
+                fragment.setArguments(bundle);
+
+                Fragment currentFragment = requireActivity().getSupportFragmentManager().findFragmentById(R.id.home_fragment_container);
+
+
+                if (currentFragment != null) {
+                    requireActivity().getSupportFragmentManager().beginTransaction().hide(currentFragment);
+                }
+
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.home_fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
         recyclerViewBooks.setAdapter(adapterBookList);
     }
 }

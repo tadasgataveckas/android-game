@@ -1,14 +1,19 @@
 package com.example.audiobook_app.Domain;
 
+import java.util.List;
+
 /**
  * Carousel book data
  */
-public class BooksDomain {
+public class Book {
     private String title;
     private String author;
     private String picAddress;
 
-    public BooksDomain(String title, String author, String picAddress) {
+    private List<Chapter> chapters;
+
+
+    public Book(String title, String author, String picAddress) {
         this.title = title;
         this.author = author;
         this.picAddress = picAddress;
