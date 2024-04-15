@@ -33,6 +33,7 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.Viewholder> 
     public void setOnItemClickListener(ClickListener<Book> bookClickListener) {
         this.clickListener = bookClickListener;
     }
+
     @NonNull
     @Override
     public BooksAdapter.Viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

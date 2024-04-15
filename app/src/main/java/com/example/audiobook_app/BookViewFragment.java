@@ -11,15 +11,25 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.audiobook_app.Adapter.ChapterAdapter;
+import com.example.audiobook_app.Domain.Chapter;
 import com.example.audiobook_app.databinding.FragmentBookViewBinding;
+
+import java.util.ArrayList;
+import java.util.List;
+
 //Roko Kaulecko
 public class BookViewFragment extends Fragment {
 
     private FragmentBookViewBinding binding;
 
     private OnBackPressedCallback callback;
+    private RecyclerView recyclerView;
+    private ChapterAdapter chapterAdapter;
 
     @Override
     public View onCreateView(
@@ -41,6 +51,12 @@ public class BookViewFragment extends Fragment {
             binding.autorius.setText(author);
             int drawableResourceId = getResources().getIdentifier(picAddress, "drawable", getContext().getPackageName());
             Glide.with(getContext()).load(drawableResourceId).into(binding.bookCover);
+
+            recyclerView = binding.chapterList;
+            chapterAdapter = new ChapterAdapter(getChapters());
+            recyclerView.setAdapter(chapterAdapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         }
 
         callback = new OnBackPressedCallback(true) {
@@ -57,6 +73,15 @@ public class BookViewFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
         return binding.getRoot();
+    }
+
+    private List<Chapter> getChapters() {
+        List<Chapter> chapters = new ArrayList<>();
+        Chapter chapterTest = new Chapter(1, "Test", "");
+        for (int i = 0; i < 10; i++) {
+            chapters.add(chapterTest);
+        }
+        return chapters;
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
