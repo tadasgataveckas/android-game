@@ -39,8 +39,8 @@ public class BookViewFragment extends Fragment {
             // Set the book data to the views
             binding.pavadinimas.setText(title);
             binding.autorius.setText(author);
-            //int drawableResourceId = getResources().getIdentifier(picAddress, "drawable", getContext().getPackageName());
-            //Glide.with(getContext()).load(drawableResourceId).into(binding.bookCover);
+            int drawableResourceId = getResources().getIdentifier(picAddress, "drawable", getContext().getPackageName());
+            Glide.with(getContext()).load(drawableResourceId).into(binding.bookCover);
         }
 
         callback = new OnBackPressedCallback(true) {
