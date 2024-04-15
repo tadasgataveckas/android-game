@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
@@ -17,6 +18,8 @@ import com.example.audiobook_app.databinding.FragmentBookViewBinding;
 public class BookViewFragment extends Fragment {
 
     private FragmentBookViewBinding binding;
+
+    private OnBackPressedCallback callback;
 
     @Override
     public View onCreateView(
@@ -40,6 +43,19 @@ public class BookViewFragment extends Fragment {
             //Glide.with(getContext()).load(drawableResourceId).into(binding.bookCover);
         }
 
+        callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null) {
+                    mainActivity.findViewById(R.id.frameLayoutNavigation).setVisibility(View.VISIBLE);
+                    mainActivity.findViewById(R.id.bottomNavigationView).setVisibility(View.VISIBLE);
+                    mainActivity.findViewById(R.id.bookViewFragmentContainer).setVisibility(View.GONE);
+                }
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+
         return binding.getRoot();
     }
 
@@ -49,15 +65,23 @@ public class BookViewFragment extends Fragment {
         binding.buttonFirst.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NavHostFragment.findNavController(BookViewFragment.this)
-                        .navigate(R.id.action_FirstFragment_to_SecondFragment);
+                AudioplayerFragment fragment = new AudioplayerFragment();
+
+                // Replace the current fragment with the new one
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.bookViewFragmentContainer, fragment)
+                        .addToBackStack(null)
+                        .commit();
             }
         });
     }
 
+
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        callback.remove();
         binding = null;
     }
 

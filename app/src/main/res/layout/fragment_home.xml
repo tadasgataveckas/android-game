@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/purple_200"
     tools:context=".HomeFragment"
-    android:id="@+id/home_fragment_container"
     >
     <SearchView
         android:id="@+id/app_bar_search"

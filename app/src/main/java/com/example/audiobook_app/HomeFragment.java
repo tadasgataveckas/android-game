@@ -99,6 +99,7 @@ public class HomeFragment extends Fragment {
         ((BooksAdapter) adapterBookList).setOnItemClickListener(new ClickListener<Book>(){
             @Override
             public void onItemClick(Book data) {
+
                 // Create a new instance of the fragment
                 BookViewFragment fragment = new BookViewFragment();
 
@@ -109,15 +110,17 @@ public class HomeFragment extends Fragment {
                 bundle.putString("picAddress", data.getPicAddress());
                 fragment.setArguments(bundle);
 
-                Fragment currentFragment = requireActivity().getSupportFragmentManager().findFragmentById(R.id.home_fragment_container);
-
-
-                if (currentFragment != null) {
-                    requireActivity().getSupportFragmentManager().beginTransaction().hide(currentFragment);
+                // Get MainActivity and hide frameLayoutNavigation and bottomNavigationView
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null) {
+                    mainActivity.findViewById(R.id.frameLayoutNavigation).setVisibility(View.GONE);
+                    mainActivity.findViewById(R.id.bottomNavigationView).setVisibility(View.GONE);
+                    mainActivity.findViewById(R.id.bookViewFragmentContainer).setVisibility(View.VISIBLE);
                 }
 
+                // Replace bookViewFragmentContainer with the new fragment
                 requireActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.home_fragment_container, fragment)
+                        .replace(R.id.bookViewFragmentContainer, fragment)
                         .addToBackStack(null)
                         .commit();
             }
