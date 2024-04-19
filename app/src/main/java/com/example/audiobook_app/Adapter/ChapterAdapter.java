@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.audiobook_app.Domain.Book;
 import com.example.audiobook_app.Domain.Chapter;
 import com.example.audiobook_app.R;
 
@@ -16,8 +17,14 @@ import java.util.List;
 public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterViewHolder> {
     private List<Chapter> chapters;
 
+    private ClickListener<Chapter> clickListener;
+
     public ChapterAdapter(List<Chapter> chapters) {
         this.chapters = chapters;
+    }
+
+    public void setOnItemClickListener(ClickListener<Chapter> chapterClickListener) {
+        this.clickListener = chapterClickListener;
     }
 
     // constructor and other methods
@@ -34,6 +41,17 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
         Chapter chapter = chapters.get(position);
         holder.chapterNumber.setText(String.valueOf(chapter.getNumber()));
         holder.chapterTitle.setText(chapter.getTitle());
+
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = holder.getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) { // Check if position is valid
+                    clickListener.onItemClick(chapters.get(position));
+                }
+            }
+        });
     }
 
     @Override

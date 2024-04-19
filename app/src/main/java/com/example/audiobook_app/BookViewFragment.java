@@ -15,7 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.audiobook_app.Adapter.BooksAdapter;
 import com.example.audiobook_app.Adapter.ChapterAdapter;
+import com.example.audiobook_app.Adapter.ClickListener;
+import com.example.audiobook_app.Domain.Book;
 import com.example.audiobook_app.Domain.Chapter;
 import com.example.audiobook_app.databinding.FragmentBookViewBinding;
 
@@ -52,11 +55,9 @@ public class BookViewFragment extends Fragment {
             int drawableResourceId = getResources().getIdentifier(picAddress, "drawable", getContext().getPackageName());
             Glide.with(getContext()).load(drawableResourceId).into(binding.bookCover);
 
+            // Set the chapter list
             recyclerView = binding.chapterList;
-            chapterAdapter = new ChapterAdapter(getChapters());
-            recyclerView.setAdapter(chapterAdapter);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
+            initChapterList();
         }
 
         callback = new OnBackPressedCallback(true) {
@@ -75,6 +76,40 @@ public class BookViewFragment extends Fragment {
         return binding.getRoot();
     }
 
+    private void initChapterList() {
+
+        chapterAdapter = new ChapterAdapter(getChapters());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        ((ChapterAdapter) chapterAdapter).setOnItemClickListener(new ClickListener<Chapter>(){
+            @Override
+            public void onItemClick(Chapter data) {
+
+                // Create a new instance of the fragment
+                AudioplayerFragment fragment = new AudioplayerFragment();
+
+                // Create a bundle to pass the book data
+                Bundle bundle = new Bundle();
+                bundle.putString("title", data.getTitle());
+                bundle.putInt("number", data.getNumber());
+                bundle.putString("audioAddress", data.getAudioAddress());
+                fragment.setArguments(bundle);
+
+
+
+                // Replace the current fragment with the new one
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.bookViewFragmentContainer, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
+        recyclerView.setAdapter(chapterAdapter);
+    }
+
+    //Creates a mock-up list of chapters
+    //TODO: Replace with actual chapter list
     private List<Chapter> getChapters() {
         List<Chapter> chapters = new ArrayList<>();
         Chapter chapterTest = new Chapter(1, "Test", "");
