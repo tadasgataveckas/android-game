@@ -8,8 +8,11 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.core.util.Pair;
 
 import androidx.annotation.NonNull;
@@ -17,6 +20,9 @@ import androidx.fragment.app.Fragment;
 
 import com.example.audiobook_app.databinding.FragmentAudioplayerBinding;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 //Roko Kaulecko
@@ -33,12 +39,26 @@ public class AudioplayerFragment extends Fragment {
     private TextView lastListenedTimestampTextView;
     private TextView currentTimeTextView;
     private TextView remainingTimeTextView;
+    private static final String _preferencesName = "MyFavourites";
+    private boolean isFavourite = false;
+    private HashMap<Integer, String> rawFileNames = new HashMap<>();
+
+    private String currentFileName;
+    private int currentResourceId;
+
+    // Initialize the mapping in your constructor or initialization method
+    private void initializeRawFileNames() {
+        rawFileNames.put(R.raw.music, "Chapter 1");
+        rawFileNames.put(R.raw.music2, "Chapter 2");
+        rawFileNames.put(R.raw.music3, "Chapter 3");
+        // Add more mappings as needed
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentAudioplayerBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
-
+        Button btnFavourite = view.findViewById(R.id.buttonFavourite);
         lastListenedFileTextView = view.findViewById(R.id.lastListenedFile);
         lastListenedTimestampTextView = view.findViewById(R.id.lastListenedTimestamp);
 //        Pair<String, Long> lastListened = getLastListened(getContext());
@@ -46,15 +66,57 @@ public class AudioplayerFragment extends Fragment {
 //        lastListenedTimestampTextView.setText(String.valueOf(lastListened.second));
         currentTimeTextView = view.findViewById(R.id.currentTime);
         remainingTimeTextView = view.findViewById(R.id.remainingTime);
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(_preferencesName,Context.MODE_PRIVATE);
+        btnFavourite.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                isFavourite =!isFavourite;
+                String currentFileName = rawFileNames.get(audioFiles[currentTrack]);
+                if (isFavourite) {
+
+                    addToFavourites(currentFileName);
+                    Toast toast = new Toast(getContext());
+                    toast.setText("ADded" + currentFileName);
+                    toast.show();
+                }
+                else{
+                removeFromFavourites(currentFileName);
+                Toast toast = new Toast(getContext());
+                toast.setText("removed" + currentFileName);
+                toast.show();
+                }
+            }
+        });
+
+
         return view;
     }
 
+
+    private void addToFavourites(String bookTitle){
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
+        Set<String> favouriteSet = sharedPreferences.getStringSet("favouriteBooks", new HashSet<>());
+        favouriteSet.add(bookTitle);
+        sharedPreferences.edit().putStringSet("favouriteBooks", favouriteSet).apply();
+    }
+
+    private void removeFromFavourites(String bookTitle){
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
+        Set<String> favouriteSet = sharedPreferences.getStringSet("favouriteBooks", new HashSet<>());
+        favouriteSet.remove(bookTitle);
+        sharedPreferences.edit().putStringSet("favouriteBooks", favouriteSet).apply();
+    }
+
+    private Set<String> getFavouriteBooks() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
+        return sharedPreferences.getStringSet("favouriteBooks", new HashSet<>());
+    }
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        initializeRawFileNames();
         // Initialize MediaPlayer with the first audio track
         mediaPlayer = MediaPlayer.create(requireContext(), audioFiles[currentTrack]);
-
+        String currentFileName = rawFileNames.get(audioFiles[currentTrack]);
         // Initialize SeekBar
         seekBar = binding.seekBar;
 

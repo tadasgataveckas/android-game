@@ -4,21 +4,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.audiobook_app.Adapter.BooksAdapter;
+import com.example.audiobook_app.Activity.MainActivity;
 import com.example.audiobook_app.Adapter.ChapterAdapter;
 import com.example.audiobook_app.Adapter.ClickListener;
-import com.example.audiobook_app.Domain.Book;
 import com.example.audiobook_app.Domain.Chapter;
 import com.example.audiobook_app.databinding.FragmentBookViewBinding;
 
