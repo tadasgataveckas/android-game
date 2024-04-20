@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.GranularRoundedCorners;
-import com.example.audiobook_app.Domain.BooksDomain;
+import com.example.audiobook_app.Domain.Book;
 import com.example.audiobook_app.R;
 
 import java.util.ArrayList;
@@ -23,11 +23,15 @@ import java.util.ArrayList;
  */
 public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.Viewholder> {
 
-    ArrayList<BooksDomain> items;
+    ArrayList<Book> items;
     Context context;
+    private ClickListener<Book> clickListener;
 
-    public BooksAdapter(ArrayList<BooksDomain> items) {
+    public BooksAdapter(ArrayList<Book> items) {
         this.items = items;
+    }
+    public void setOnItemClickListener(ClickListener<Book> bookClickListener) {
+        this.clickListener = bookClickListener;
     }
 
     @NonNull
@@ -49,6 +53,18 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.Viewholder> 
                 .load(drawableResourceId)
                 .transform(new GranularRoundedCorners(30,30,0,0))
                 .into(holder.pic);
+
+
+        // Set the OnClickListener here
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = holder.getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) { // Check if position is valid
+                    clickListener.onItemClick(items.get(position));
+                }
+            }
+        });
 
     }
 

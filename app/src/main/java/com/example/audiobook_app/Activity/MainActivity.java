@@ -1,5 +1,7 @@
-package com.example.audiobook_app;
+package com.example.audiobook_app.Activity;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +18,11 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.audiobook_app.AudioplayerFragment;
+import com.example.audiobook_app.HomeFragment;
+import com.example.audiobook_app.ProfileFragment;
+import com.example.audiobook_app.R;
+import com.example.audiobook_app.SettingsFragment;
 import com.example.audiobook_app.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,12 +30,17 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
 
+    private static final String _preferencesName = "MyFavourites";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        SharedPreferences sharedPreferences = getSharedPreferences(_preferencesName, Context.MODE_PRIVATE);
+
+
         replaceFragment( new HomeFragment());
         binding.bottomNavigationView.setSelectedItemId(R.id.homeNavMenu); // Set homeNavMenu as selected
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {

@@ -1,5 +1,7 @@
 package com.example.audiobook_app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,16 +9,27 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+
+
 public class ProfileFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private ListView listView;
+    private ArrayAdapter<String> adapter;
+    private Set<String> favouriteSet;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -59,6 +72,17 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        View view =  inflater.inflate(R.layout.fragment_profile, container, false);
+        listView = view.findViewById(R.id.favouriteBooks);
+        favouriteSet = getFavoritesFromSharedPreferences();
+        ArrayList<String> favouriteList = new ArrayList<>(favouriteSet);
+        adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1,favouriteList);
+        listView.setAdapter(adapter);
+        return view;
+    }
+
+    private Set<String> getFavoritesFromSharedPreferences() {
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
+        return sharedPreferences.getStringSet("favouriteBooks", new HashSet<>());
     }
 }
