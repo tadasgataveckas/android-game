@@ -26,7 +26,7 @@ public class AudioplayerFragment extends Fragment {
     private MediaPlayer mediaPlayer; // Declare MediaPlayer object
     private int[] audioFiles = { R.raw.music, R.raw.music2, R.raw.music3}; // Example audio files
     private int currentTrack = 0; // Index of the current audio track
-    private boolean isPlaying = true; // Flag to track audio playback state
+    private boolean isPlaying = false; // Flag to track audio playback state
     private SeekBar seekBar; // SeekBar for audio progress
     private Runnable updateSeekBar; // Runnable for updating SeekBar progress
     private TextView lastListenedFileTextView;
