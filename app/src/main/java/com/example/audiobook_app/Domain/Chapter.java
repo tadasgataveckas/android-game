@@ -9,7 +9,7 @@ public class Chapter {
 
     @NonNull
     @ColumnInfo(name = "number")
-    private int number;
+    private String number;
 
     @NonNull
     @ColumnInfo(name = "title")
@@ -19,7 +19,7 @@ public class Chapter {
     @ColumnInfo(name = "audioAddress")
     private String audioAddress;
 
-    public Chapter(@NonNull int number, @NonNull String title, @NonNull String audioAddress) {
+    public Chapter(@NonNull String number, @NonNull String title, @NonNull String audioAddress) {
         this.number = number;
         this.title = title;
         this.audioAddress = audioAddress;
@@ -36,11 +36,11 @@ public class Chapter {
     }
 
     @NonNull
-    public int getNumber() {
+    public String getNumber() {
         return number;
     }
 
-    public void setNumber(@NonNull int number) {
+    public void setNumber(@NonNull String number) {
         this.number = number;
     }
 

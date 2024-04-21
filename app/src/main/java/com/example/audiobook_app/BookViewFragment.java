@@ -54,6 +54,8 @@ public class BookViewFragment extends Fragment {
             // Set the chapter list
             recyclerView = binding.chapterList;
             initChapterList();
+
+            
         }
 
         callback = new OnBackPressedCallback(true) {
@@ -87,7 +89,7 @@ public class BookViewFragment extends Fragment {
                 // Create a bundle to pass the book data
                 Bundle bundle = new Bundle();
                 bundle.putString("title", data.getTitle());
-                bundle.putInt("number", data.getNumber());
+                bundle.putString("number", data.getNumber());
                 bundle.putString("audioAddress", data.getAudioAddress());
                 fragment.setArguments(bundle);
 
@@ -108,7 +110,7 @@ public class BookViewFragment extends Fragment {
     //TODO: Replace with actual chapter list
     private List<Chapter> getChapters() {
         List<Chapter> chapters = new ArrayList<>();
-        Chapter chapterTest = new Chapter(1, "Test", "");
+        Chapter chapterTest = new Chapter("1", "Test", "");
         for (int i = 0; i < 10; i++) {
             chapters.add(chapterTest);
         }

@@ -24,6 +24,10 @@ public class Book {
     private String picAddress;
 
     @NonNull
+    @ColumnInfo(name = "description")
+    private String description;
+
+    @NonNull
     @ColumnInfo(name = "chapters")
     private List<Chapter> chapters;
 
@@ -34,6 +38,16 @@ public class Book {
         this.title = title;
         this.author = author;
         this.picAddress = picAddress;
+    }
+
+    public Book(@NonNull String title,
+                @NonNull String author,
+                @NonNull String description,
+                @NonNull String picAddress) {
+        this.title = title;
+        this.author = author;
+        this.picAddress = picAddress;
+        this.description = description;
     }
 
     @NonNull
