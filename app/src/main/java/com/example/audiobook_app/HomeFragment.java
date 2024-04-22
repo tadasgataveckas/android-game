@@ -3,6 +3,7 @@ package com.example.audiobook_app;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,6 +37,7 @@ public class HomeFragment extends Fragment {
 
     private RecyclerView.Adapter adapterBookList;
     private RecyclerView recyclerViewBooks;
+    private RecyclerView recyclerViewBooksVertical;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -76,7 +78,9 @@ public class HomeFragment extends Fragment {
 
         // Initialize RecyclerView
         recyclerViewBooks = view.findViewById(R.id.view1);
+        recyclerViewBooksVertical = view.findViewById(R.id.view2);
         initRecyclerView();
+        initRecyclerViewVertical();
 
         return view;
     }
@@ -92,11 +96,34 @@ public class HomeFragment extends Fragment {
         items.addAll(bookGenerator.getBooks(getContext()));
 
 //        recyclerViewBooks =findViewById(R.id.view1);
+
         recyclerViewBooks.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-
         adapterBookList = new BooksAdapter(items);
+        HandleBookClick(adapterBookList);
 
 
+        recyclerViewBooks.setAdapter(adapterBookList);
+    }
+
+    private void initRecyclerViewVertical() {
+        ArrayList<Book> items = new ArrayList<>();
+        items.add(new Book("Soul", "Olivia Wilson", "@drawable/b1"));
+        items.add(new Book("Harry Potter", "J.K. Rowling", "@drawable/b2"));
+        items.add(new Book("A Million To One", "Tony Faggioli", "@drawable/b3"));
+        items.add(new Book("Educated", "Tara Westover", "@drawable/b4"));
+        BookGenerator bookGenerator = new BookGenerator();
+        items.addAll(bookGenerator.getBooks(getContext()));
+
+//        recyclerViewBooks =findViewById(R.id.view1);
+        recyclerViewBooksVertical.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        adapterBookList = new BooksAdapter(items);
+        HandleBookClick(adapterBookList);
+
+
+        recyclerViewBooksVertical.setAdapter(adapterBookList);
+    }
+
+    private void HandleBookClick(RecyclerView.Adapter adapterBookList) {
         ((BooksAdapter) adapterBookList).setOnItemClickListener(new ClickListener<Book>(){
             @Override
             public void onItemClick(Book data) {
@@ -127,7 +154,5 @@ public class HomeFragment extends Fragment {
                         .commit();
             }
         });
-
-        recyclerViewBooks.setAdapter(adapterBookList);
     }
 }

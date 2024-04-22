@@ -29,7 +29,7 @@ public class BookViewFragment extends Fragment {
     private OnBackPressedCallback callback;
     private RecyclerView recyclerView;
     private ChapterAdapter chapterAdapter;
-
+    List<Chapter> chapters;
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -44,7 +44,7 @@ public class BookViewFragment extends Fragment {
             String title = bundle.getString("title");
             String author = bundle.getString("author");
             String picAddress = bundle.getString("picAddress");
-            List<Chapter> chapters = bundle.getParcelableArrayList("chapters");
+            chapters = bundle.getParcelableArrayList("chapters");
             // Set the book data to the views
             binding.pavadinimas.setText(title);
             binding.autorius.setText(author);
@@ -125,6 +125,15 @@ public class BookViewFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 AudioplayerFragment fragment = new AudioplayerFragment();
+
+                Chapter data = chapters.get(0);
+                // Create a bundle to pass the book data
+                Bundle bundle = new Bundle();
+                bundle.putString("title", data.getTitle());
+                bundle.putString("number", data.getNumber());
+                bundle.putString("audioAddress", data.getAudioAddress());
+                bundle.putParcelableArrayList("chapters", (ArrayList) chapters);
+                fragment.setArguments(bundle);
 
                 // Replace the current fragment with the new one
                 requireActivity().getSupportFragmentManager().beginTransaction()
