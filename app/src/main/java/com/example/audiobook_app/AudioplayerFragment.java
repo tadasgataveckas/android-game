@@ -116,6 +116,11 @@ public class AudioplayerFragment extends Fragment {
         //TODO persiusti FavoritesChapter -> MyFavourites
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
         Set<String> favouriteSet = sharedPreferences.getStringSet("favouriteBooks", new HashSet<>());
+
+
+        //TODO saveLastListened(getContext(), getResources().getResourceEntryName(getAudioFileId(currentTrack)), mediaPlayer.getCurrentPosition());
+        //TODO mediaPlayer.seekTo();
+
         favouriteSet.add(bookTitle);
         sharedPreferences.edit().putStringSet("favouriteBooks", favouriteSet).apply();
     }
@@ -204,6 +209,7 @@ public class AudioplayerFragment extends Fragment {
                 if (currentTrack < chapters.size() - 1) {
                     // Save the current audio file and its timestamp before moving to the next track
                     saveLastListened(getContext(), getResources().getResourceEntryName(getAudioFileId(currentTrack)), mediaPlayer.getCurrentPosition());
+
                     Pair<String, Long> lastListened = getLastListened(getContext());
                     lastListenedFileTextView.setText("Last Listened File: " + lastListened.first);
                     long minutes = TimeUnit.MILLISECONDS.toMinutes(lastListened.second);
