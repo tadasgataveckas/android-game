@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.audiobook_app.Domain.Chapter;
+import com.example.audiobook_app.Domain.FavoritesChapter;
 import com.example.audiobook_app.databinding.FragmentAudioplayerBinding;
 
 import java.util.HashMap;
@@ -72,7 +73,15 @@ public class AudioplayerFragment extends Fragment {
             String author = bundle.getString("author");
             String picAddress = bundle.getString("picAddress");
             chapters = bundle.getParcelableArrayList("chapters");
+
+
+           // FavoritesChapter chapter = bundle.getParcelableArrayList("favChapter");
             //TODO jei su FavoritesCHaapter ~  nustatytu laika metodas
+
+//            if(chapter != null)
+//            {
+//
+//            }
         }
         View view = binding.getRoot();
         Button btnFavourite = view.findViewById(R.id.buttonFavourite);
@@ -117,6 +126,8 @@ public class AudioplayerFragment extends Fragment {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
         Set<String> favouriteSet = sharedPreferences.getStringSet("favouriteBooks", new HashSet<>());
 
+        FavoritesChapter favoritesChapter = new FavoritesChapter(mediaPlayer.getCurrentPosition(), chapters.get(currentTrack), chapters, currentTrack);
+
 
         //TODO saveLastListened(getContext(), getResources().getResourceEntryName(getAudioFileId(currentTrack)), mediaPlayer.getCurrentPosition());
         //TODO mediaPlayer.seekTo();
@@ -132,6 +143,7 @@ public class AudioplayerFragment extends Fragment {
         sharedPreferences.edit().putStringSet("favouriteBooks", favouriteSet).apply();
     }
 
+    //TODO paleist kai kviecia metoda
     private Set<String> getFavouriteBooks() {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
         return sharedPreferences.getStringSet("favouriteBooks", new HashSet<>());
