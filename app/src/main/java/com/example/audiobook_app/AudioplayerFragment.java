@@ -99,7 +99,7 @@ public class AudioplayerFragment extends Fragment {
                 String currentFileName = chapters.get(currentTrack).getTitle();
                 if (isFavourite) {
 
-                    addToFavourites(currentFileName);
+                    addToFavourites(currentFileName + " " + mediaPlayer.getCurrentPosition());
                     Toast toast = new Toast(getContext());
                     toast.setText("Added" + currentFileName);
                     toast.show();
@@ -149,7 +149,9 @@ public class AudioplayerFragment extends Fragment {
         return sharedPreferences.getStringSet("favouriteBooks", new HashSet<>());
     }
 
-    public void setFavoriteChapterTime() {
+    public void setFavoriteChapter() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
+
 
         mediaPlayer.seekTo(favChapter.getTimestamp());
     }
