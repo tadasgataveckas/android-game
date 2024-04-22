@@ -59,6 +59,8 @@ public class AudioplayerFragment extends Fragment {
 
     List<Chapter> chapters;
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -70,7 +72,7 @@ public class AudioplayerFragment extends Fragment {
             String author = bundle.getString("author");
             String picAddress = bundle.getString("picAddress");
             chapters = bundle.getParcelableArrayList("chapters");
-
+            //TODO jei su FavoritesCHaapter ~  nustatytu laika metodas
         }
         View view = binding.getRoot();
         Button btnFavourite = view.findViewById(R.id.buttonFavourite);
@@ -109,6 +111,9 @@ public class AudioplayerFragment extends Fragment {
 
 
     private void addToFavourites(String bookTitle){
+
+        //TODO irasyti Timestampa, dabartini chapter, chpateriai booko list, currentTrack i FavoritesChapter
+        //TODO persiusti FavoritesChapter -> MyFavourites
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
         Set<String> favouriteSet = sharedPreferences.getStringSet("favouriteBooks", new HashSet<>());
         favouriteSet.add(bookTitle);

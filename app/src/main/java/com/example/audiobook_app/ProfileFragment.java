@@ -78,6 +78,9 @@ public class ProfileFragment extends Fragment {
         ArrayList<String> favouriteList = new ArrayList<>(favouriteSet);
         adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1,favouriteList);
         listView.setAdapter(adapter);
+        //TODO sukurti chapter adapter ir i ji ideti onClick() FavoritesChapter (ChapterAdapter ima tik chapterius tai galima pakeist tik onclick())
+        //TODO sukurti FavoritesChapterAdapter ir i ji ideti onClick() FavoritesChapter
+        //TODO onclick to audioPlayerFragment
         return view;
     }
 
