@@ -91,6 +91,7 @@ public class BookViewFragment extends Fragment {
                 bundle.putString("title", data.getTitle());
                 bundle.putString("number", data.getNumber());
                 bundle.putString("audioAddress", data.getAudioAddress());
+                bundle.putParcelableArrayList("chapters", (ArrayList) chapters);
                 fragment.setArguments(bundle);
 
 

@@ -97,7 +97,8 @@ public class BookGenerator {
                 if (parts.length >= 2) {
                     String chapterNumber = parts[0];
                     String chapterTitle = parts[1];
-                    Chapter chapter = new Chapter(chapterNumber, chapterTitle, filename);
+                    String noExtension = filename.replaceFirst(".mp3", "");
+                    Chapter chapter = new Chapter(chapterNumber, chapterTitle, noExtension);
                     chapters.add(chapter);
                 }
             }
