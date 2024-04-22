@@ -24,7 +24,8 @@ public class BookGenerator {
     }
 
     //TODO Read books from a json file and return a list of books
-    public List<Book> generateBooksFromJSON(Context context) {
+    private List<Book> generateBooksFromJSON(Context context) {
+
         List<Book> books = new ArrayList<>();
         try {
             // Get the resources of the application
@@ -36,22 +37,46 @@ public class BookGenerator {
             // Create a JsonReader from the input stream
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
 
-            // Parse the JSON file
-            JSONArray jsonArray = new JSONArray(reader);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
+            // Start reading array
+            reader.beginArray();
 
-                // Extract data for each book
-                String title = jsonObject.getString("title");
-                String author = jsonObject.getString("author");
-                String description = jsonObject.getString("description");
-                String coverImageUrl = jsonObject.getString("cover_image_url");
+            while (reader.hasNext()) {
+                // Start reading object
+                reader.beginObject();
+
+                String title = "";
+                String author = "";
+                String description = "";
+                String coverImageUrl = "";
+
+                while (reader.hasNext()) {
+                    String name = reader.nextName();
+                    if (name.equals("title")) {
+                        title = reader.nextString();
+                    } else if (name.equals("author")) {
+                        author = reader.nextString();
+                    } else if (name.equals("description")) {
+                        description = reader.nextString();
+                    } else if (name.equals("cover_image_url")) {
+                        coverImageUrl = reader.nextString();
+                    } else {
+                        reader.skipValue();
+                    }
+                }
+
+                // End reading object
+                reader.endObject();
 
                 // Create a new Book object and add it to the list
                 Book book = new Book(title, author, description, coverImageUrl);
                 book.setChapters(generateChapters(book));
                 books.add(book);
             }
+
+            // End reading array
+            reader.endArray();
+
+            reader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -67,10 +92,11 @@ public class BookGenerator {
         for (Field field : fields) {
             String filename = field.getName();
             if (filename.startsWith(bookTitle)) {
-                String[] parts = filename.split("_");
-                if (parts.length >= 3) {
-                    String chapterNumber = parts[1];
-                    String chapterTitle = parts[2];
+                String noTitle = filename.replaceFirst(bookTitle + "_", "");
+                String[] parts = noTitle.split("_");
+                if (parts.length >= 2) {
+                    String chapterNumber = parts[0];
+                    String chapterTitle = parts[1];
                     Chapter chapter = new Chapter(chapterNumber, chapterTitle, filename);
                     chapters.add(chapter);
                 }

@@ -1,5 +1,9 @@
 package com.example.audiobook_app.Domain;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.util.ArrayList;
 import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
@@ -9,7 +13,7 @@ import androidx.room.PrimaryKey;
  * Carousel book data
  */
 @Entity
-public class Book {
+public class Book{
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -87,11 +91,15 @@ public class Book {
     }
 
     @NonNull
-    public List<Chapter> getChapters() {
-        return chapters;
+    public ArrayList getChapters() {
+        return (ArrayList) chapters;
     }
+
+
 
     public void setChapters(@NonNull List<Chapter> chapters) {
         this.chapters = chapters;
     }
+
+
 }

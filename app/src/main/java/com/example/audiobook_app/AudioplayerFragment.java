@@ -47,6 +47,7 @@ public class AudioplayerFragment extends Fragment {
     private int currentResourceId;
 
     // Initialize the mapping in your constructor or initialization method
+    //TODO obtain chapter list
     private void initializeRawFileNames() {
         rawFileNames.put(R.raw.music, "Chapter 1");
         rawFileNames.put(R.raw.music2, "Chapter 2");
@@ -76,7 +77,7 @@ public class AudioplayerFragment extends Fragment {
 
                     addToFavourites(currentFileName);
                     Toast toast = new Toast(getContext());
-                    toast.setText("ADded" + currentFileName);
+                    toast.setText("Added" + currentFileName);
                     toast.show();
                 }
                 else{

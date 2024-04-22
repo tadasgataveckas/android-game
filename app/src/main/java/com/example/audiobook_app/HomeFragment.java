@@ -14,6 +14,7 @@ import com.example.audiobook_app.Activity.MainActivity;
 import com.example.audiobook_app.Adapter.BooksAdapter;
 import com.example.audiobook_app.Adapter.ClickListener;
 import com.example.audiobook_app.Domain.Book;
+import com.example.audiobook_app.Domain.BookGenerator;
 
 import java.util.ArrayList;
 
@@ -83,10 +84,12 @@ public class HomeFragment extends Fragment {
 
     private void initRecyclerView() {
         ArrayList<Book> items = new ArrayList<>();
-        items.add(new Book("Soul", "Olivia Wilson", "@drawable/b1"));
-        items.add(new Book("Harry Potter", "J.K. Rowling", "@drawable/b2"));
-        items.add(new Book("A Million To One", "Tony Faggioli", "@drawable/b3"));
-        items.add(new Book("Educated", "Tara Westover", "@drawable/b4"));
+//        items.add(new Book("Soul", "Olivia Wilson", "@drawable/b1"));
+//        items.add(new Book("Harry Potter", "J.K. Rowling", "@drawable/b2"));
+//        items.add(new Book("A Million To One", "Tony Faggioli", "@drawable/b3"));
+//        items.add(new Book("Educated", "Tara Westover", "@drawable/b4"));
+        BookGenerator bookGenerator = new BookGenerator();
+        items.addAll(bookGenerator.getBooks(getContext()));
 
 //        recyclerViewBooks =findViewById(R.id.view1);
         recyclerViewBooks.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -106,6 +109,7 @@ public class HomeFragment extends Fragment {
                 bundle.putString("title", data.getTitle());
                 bundle.putString("author", data.getAuthor());
                 bundle.putString("picAddress", data.getPicAddress());
+                bundle.putParcelableArrayList("chapters", data.getChapters());
                 fragment.setArguments(bundle);
 
                 // Get MainActivity and hide frameLayoutNavigation and bottomNavigationView

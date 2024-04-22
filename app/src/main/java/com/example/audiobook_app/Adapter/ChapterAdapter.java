@@ -39,7 +39,7 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
     @Override
     public void onBindViewHolder(@NonNull ChapterViewHolder holder, int position) {
         Chapter chapter = chapters.get(position);
-        holder.chapterNumber.setText(String.valueOf(chapter.getNumber()));
+        holder.chapterNumber.setText(chapter.getNumber());
         holder.chapterTitle.setText(chapter.getTitle());
 
 

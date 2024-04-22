@@ -1,11 +1,14 @@
 package com.example.audiobook_app.Domain;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
 @Entity
-public class Chapter {
+public class Chapter implements Parcelable{
 
     @NonNull
     @ColumnInfo(name = "number")
@@ -50,5 +53,37 @@ public class Chapter {
 
     public void setAudioAddress(@NonNull String audioAddress) {
         this.audioAddress = audioAddress;
+    }
+
+
+
+    protected Chapter(Parcel in) {
+        number = in.readString();
+        title = in.readString();
+        audioAddress = in.readString();
+    }
+
+    public static final Parcelable.Creator<Chapter> CREATOR = new Creator<Chapter>() {
+        @Override
+        public Chapter createFromParcel(Parcel in) {
+            return new Chapter(in);
+        }
+
+        @Override
+        public Chapter[] newArray(int size) {
+            return new Chapter[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(number);
+        dest.writeString(title);
+        dest.writeString(audioAddress);
     }
 }

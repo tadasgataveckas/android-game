@@ -44,7 +44,7 @@ public class BookViewFragment extends Fragment {
             String title = bundle.getString("title");
             String author = bundle.getString("author");
             String picAddress = bundle.getString("picAddress");
-
+            List<Chapter> chapters = bundle.getParcelableArrayList("chapters");
             // Set the book data to the views
             binding.pavadinimas.setText(title);
             binding.autorius.setText(author);
@@ -53,9 +53,9 @@ public class BookViewFragment extends Fragment {
 
             // Set the chapter list
             recyclerView = binding.chapterList;
-            initChapterList();
+            initChapterList(chapters);
 
-            
+
         }
 
         callback = new OnBackPressedCallback(true) {
@@ -74,9 +74,9 @@ public class BookViewFragment extends Fragment {
         return binding.getRoot();
     }
 
-    private void initChapterList() {
+    private void initChapterList(List<Chapter> chapters) {
 
-        chapterAdapter = new ChapterAdapter(getChapters());
+        chapterAdapter = new ChapterAdapter(chapters);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         ((ChapterAdapter) chapterAdapter).setOnItemClickListener(new ClickListener<Chapter>(){
@@ -106,16 +106,16 @@ public class BookViewFragment extends Fragment {
         recyclerView.setAdapter(chapterAdapter);
     }
 
-    //Creates a mock-up list of chapters
-    //TODO: Replace with actual chapter list
-    private List<Chapter> getChapters() {
-        List<Chapter> chapters = new ArrayList<>();
-        Chapter chapterTest = new Chapter("1", "Test", "");
-        for (int i = 0; i < 10; i++) {
-            chapters.add(chapterTest);
-        }
-        return chapters;
-    }
+//    //Creates a mock-up list of chapters
+//
+//    private List<Chapter> getChapters() {
+//        List<Chapter> chapters = new ArrayList<>();
+//        Chapter chapterTest = new Chapter("1", "Test", "");
+//        for (int i = 0; i < 10; i++) {
+//            chapters.add(chapterTest);
+//        }
+//        return chapters;
+//    }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
