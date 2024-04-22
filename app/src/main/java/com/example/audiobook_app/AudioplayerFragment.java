@@ -22,7 +22,6 @@ import com.example.audiobook_app.Domain.Chapter;
 import com.example.audiobook_app.Domain.FavoritesChapter;
 import com.example.audiobook_app.databinding.FragmentAudioplayerBinding;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -59,7 +58,7 @@ public class AudioplayerFragment extends Fragment {
 //    }
 
     List<Chapter> chapters;
-
+    FavoritesChapter favChapter;
 
 
     @Override
@@ -146,7 +145,13 @@ public class AudioplayerFragment extends Fragment {
     //TODO paleist kai kviecia metoda
     private Set<String> getFavouriteBooks() {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
+
         return sharedPreferences.getStringSet("favouriteBooks", new HashSet<>());
+    }
+
+    public void setFavoriteChapterTime() {
+
+        mediaPlayer.seekTo(favChapter.getTimestamp());
     }
 
     private int getAudioFileId(int currentTrack) {
@@ -305,6 +310,14 @@ public class AudioplayerFragment extends Fragment {
 
         // Start audio playback
         playAudio();
+
+        //TODO change later
+        //setFavoriteChapterTime();
+        if(favChapter != null)
+        {
+            mediaPlayer.seekTo(favChapter.getTimestamp());
+        }
+
     }
 
     private void playAudio() {
