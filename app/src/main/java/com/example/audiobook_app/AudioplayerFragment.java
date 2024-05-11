@@ -71,7 +71,6 @@ public class AudioplayerFragment extends Fragment {
             String title = bundle.getString("title");
             String author = bundle.getString("author");
             String picAddress = bundle.getString("picAddress");
-            chapters = bundle.getParcelableArrayList("chapters");
 
 
            // FavoritesChapter chapter = bundle.getParcelableArrayList("favChapter");

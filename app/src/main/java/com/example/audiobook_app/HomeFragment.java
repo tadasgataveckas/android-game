@@ -11,13 +11,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.audiobook_app.Activity.AppActivity;
 import com.example.audiobook_app.Activity.MainActivity;
 import com.example.audiobook_app.Adapter.BooksAdapter;
 import com.example.audiobook_app.Adapter.ClickListener;
+import com.example.audiobook_app.Domain.AppDatabase;
 import com.example.audiobook_app.Domain.Book;
 import com.example.audiobook_app.Domain.BookGenerator;
+import com.example.audiobook_app.Domain.BookWithChapters;
+import com.example.audiobook_app.Domain.Chapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,18 +31,20 @@ import java.util.ArrayList;
  */
 public class HomeFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
+
     private String mParam1;
     private String mParam2;
 
     private RecyclerView.Adapter adapterBookList;
     private RecyclerView recyclerViewBooks;
     private RecyclerView recyclerViewBooksVertical;
+
+    MainActivity mainActivity;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -51,7 +58,7 @@ public class HomeFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment ProfileFragment.
      */
-    // TODO: Rename and change types and number of parameters
+
     public static HomeFragment newInstance(String param1, String param2) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
@@ -68,6 +75,7 @@ public class HomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        mainActivity = (MainActivity) getActivity();
     }
 
     @Override
@@ -92,13 +100,14 @@ public class HomeFragment extends Fragment {
 //        items.add(new Book("Harry Potter", "J.K. Rowling", "@drawable/b2"));
 //        items.add(new Book("A Million To One", "Tony Faggioli", "@drawable/b3"));
 //        items.add(new Book("Educated", "Tara Westover", "@drawable/b4"));
-        BookGenerator bookGenerator = new BookGenerator();
-        items.addAll(bookGenerator.getBooks(getContext()));
+
+        items.addAll(mainActivity.books);
+
 
 //        recyclerViewBooks =findViewById(R.id.view1);
 
         recyclerViewBooks.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        adapterBookList = new BooksAdapter(items);
+        adapterBookList = new BooksAdapter((ArrayList<Book>) mainActivity.books);
         HandleBookClick(adapterBookList);
 
 
@@ -107,12 +116,12 @@ public class HomeFragment extends Fragment {
 
     private void initRecyclerViewVertical() {
         ArrayList<Book> items = new ArrayList<>();
-        items.add(new Book("Soul", "Olivia Wilson", "@drawable/b1"));
-        items.add(new Book("Harry Potter", "J.K. Rowling", "@drawable/b2"));
-        items.add(new Book("A Million To One", "Tony Faggioli", "@drawable/b3"));
-        items.add(new Book("Educated", "Tara Westover", "@drawable/b4"));
-        BookGenerator bookGenerator = new BookGenerator();
-        items.addAll(bookGenerator.getBooks(getContext()));
+        items.add(new Book("Soul", "Olivia Wilson", "","@drawable/b1"));
+        items.add(new Book("Harry Potter", "J.K. Rowling", "","@drawable/b2"));
+        items.add(new Book("A Million To One", "Tony Faggioli", "","@drawable/b3"));
+        items.add(new Book("Educated", "Tara Westover", "","@drawable/b4"));
+
+        items.addAll(mainActivity.books);
 
 //        recyclerViewBooks =findViewById(R.id.view1);
         recyclerViewBooksVertical.setLayoutManager(new GridLayoutManager(getContext(), 2));
@@ -136,8 +145,25 @@ public class HomeFragment extends Fragment {
                 bundle.putString("title", data.getTitle());
                 bundle.putString("author", data.getAuthor());
                 bundle.putString("picAddress", data.getPicAddress());
-                bundle.putParcelableArrayList("chapters", data.getChapters());
+                //bundle.putParcelableArrayList("chapters", data.getChapters());
+
+
+
+
+                long index = mainActivity.findBookInDb(data);
+                if(index != -1)
+                {
+                    bundle.putLong("id", index);
+                    bundle.putBoolean("ifBookFoundInDb", true);
+                }
+                else
+                {
+                    index = ((BooksAdapter) adapterBookList).getBookIndex(data);
+                    bundle.putLong("id", index);
+                    bundle.putBoolean("ifBookFoundInDb", false);
+                }
                 fragment.setArguments(bundle);
+                //send id instead of the whole book object
 
                 // Get MainActivity and hide frameLayoutNavigation and bottomNavigationView
                 MainActivity mainActivity = (MainActivity) getActivity();

@@ -19,11 +19,17 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.audiobook_app.AudioplayerFragment;
+import com.example.audiobook_app.Domain.AppDatabase;
+import com.example.audiobook_app.Domain.Book;
+import com.example.audiobook_app.Domain.BookGenerator;
+import com.example.audiobook_app.Domain.Chapter;
 import com.example.audiobook_app.HomeFragment;
 import com.example.audiobook_app.ProfileFragment;
 import com.example.audiobook_app.R;
 import com.example.audiobook_app.SettingsFragment;
 import com.example.audiobook_app.databinding.ActivityMainBinding;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,6 +37,10 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     private static final String _preferencesName = "MyFavourites";
+
+    private AppDatabase db; //permanent database for books
+    public List<Book> books; //temporary storage for books
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +52,14 @@ public class MainActivity extends AppCompatActivity {
 
 
         replaceFragment( new HomeFragment());
+        initBottomNavigation();
+        db = AppActivity.getDatabase(this);
+
+        BookGenerator bookGenerator = new BookGenerator();
+        books = bookGenerator.getBooks(this);
+    }
+
+    private void initBottomNavigation() {
         binding.bottomNavigationView.setSelectedItemId(R.id.homeNavMenu); // Set homeNavMenu as selected
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             if(item.getItemId() == R.id.homeNavMenu) {
@@ -94,5 +112,36 @@ public class MainActivity extends AppCompatActivity {
 
         });
         return super.onCreateOptionsMenu(menu);
+    }
+
+
+    public void BooksToDatabase()
+    {
+        for (Book book : books) {
+            long bookId = db.bookDAO().insert(book); // this should return the id of the inserted book
+
+            List<Chapter> chapters = book.getChapters();
+            if (chapters != null) {
+                for (Chapter chapter : chapters) {
+                    chapter.setBookId((int)bookId);
+                    db.chapterDAO().insert(chapter);
+                }
+            }
+        }
+    }
+
+    public AppDatabase getDb()
+    {
+        return db;
+    }
+
+    public long findBookInDb(Book data) {
+        List<Book> books = db.bookDAO().getAllBooks();
+        for (Book book : books) {
+            if (book.getTitle().equals(data.getTitle())) {
+                return book.getId();
+            }
+        }
+        return -1;
     }
 }

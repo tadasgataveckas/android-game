@@ -12,9 +12,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.audiobook_app.Activity.AppActivity;
 import com.example.audiobook_app.Activity.MainActivity;
 import com.example.audiobook_app.Adapter.ChapterAdapter;
 import com.example.audiobook_app.Adapter.ClickListener;
+import com.example.audiobook_app.Domain.AppDatabase;
+import com.example.audiobook_app.Domain.Book;
+import com.example.audiobook_app.Domain.BookWithChapters;
 import com.example.audiobook_app.Domain.Chapter;
 import com.example.audiobook_app.databinding.FragmentBookViewBinding;
 
@@ -30,6 +34,20 @@ public class BookViewFragment extends Fragment {
     private RecyclerView recyclerView;
     private ChapterAdapter chapterAdapter;
     List<Chapter> chapters;
+
+    Book book;
+
+    MainActivity mainActivity;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mainActivity = (MainActivity) getActivity();
+    }
+
+
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -37,26 +55,16 @@ public class BookViewFragment extends Fragment {
     ) {
         // Inflate the layout for this fragment using view binding
         binding = FragmentBookViewBinding.inflate(inflater, container, false);
-
         // Get the book data from the arguments
         Bundle bundle = getArguments();
-        if (bundle != null) {
-            String title = bundle.getString("title");
-            String author = bundle.getString("author");
-            String picAddress = bundle.getString("picAddress");
-            chapters = bundle.getParcelableArrayList("chapters");
-            // Set the book data to the views
-            binding.pavadinimas.setText(title);
-            binding.autorius.setText(author);
-            int drawableResourceId = getResources().getIdentifier(picAddress, "drawable", getContext().getPackageName());
-            Glide.with(getContext()).load(drawableResourceId).into(binding.bookCover);
-
-            // Set the chapter list
-            recyclerView = binding.chapterList;
-            initChapterList(chapters);
-
-
+        long bookID = 0;
+        if (bundle != null)
+        {
+            bookID = bundle.getLong("id");
+            boolean ifBookFoundInDb = bundle.getBoolean("ifBookFoundInDb");
+            getBookData(bookID, ifBookFoundInDb);
         }
+
 
         callback = new OnBackPressedCallback(true) {
             @Override
@@ -72,6 +80,32 @@ public class BookViewFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
         return binding.getRoot();
+    }
+
+    private void getBookData(long bookID, boolean ifBookFoundInDb) {
+        if(bookID != 0)
+        {
+            return;
+        }
+        if(ifBookFoundInDb) {
+            BookWithChapters bookWithChapters = mainActivity.getDb().bookDAO().getBookWithChapters((int) bookID);
+
+            book = bookWithChapters.user;
+            chapters = bookWithChapters.chapters;
+        }
+        else{
+            book = mainActivity.books.get((int)bookID);
+            chapters = mainActivity.books.get((int)bookID).getChapters();
+        }
+
+        // Set the chapter list
+        recyclerView = binding.chapterList;
+        initChapterList(chapters);
+        // Set the book data to the views
+        binding.pavadinimas.setText(book.getTitle());
+        binding.autorius.setText(book.getAuthor());
+        int drawableResourceId = getResources().getIdentifier(book.getPicAddress(), "drawable", getContext().getPackageName());
+        Glide.with(getContext()).load(drawableResourceId).into(binding.bookCover);
     }
 
     private void initChapterList(List<Chapter> chapters) {
@@ -91,7 +125,7 @@ public class BookViewFragment extends Fragment {
                 bundle.putString("title", data.getTitle());
                 bundle.putString("number", data.getNumber());
                 bundle.putString("audioAddress", data.getAudioAddress());
-                bundle.putParcelableArrayList("chapters", (ArrayList) chapters);
+               // bundle.putParcelableArrayList("chapters", (ArrayList) chapters);
                 fragment.setArguments(bundle);
 
 
@@ -121,6 +155,7 @@ public class BookViewFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //TODO: If the button is pressed download/save the book to the database and handle the history of the book (read timestamps and favourite chapters)
         binding.buttonFirst.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -129,10 +164,10 @@ public class BookViewFragment extends Fragment {
                 Chapter data = chapters.get(0);
                 // Create a bundle to pass the book data
                 Bundle bundle = new Bundle();
-                bundle.putString("title", data.getTitle());
-                bundle.putString("number", data.getNumber());
-                bundle.putString("audioAddress", data.getAudioAddress());
-                bundle.putParcelableArrayList("chapters", (ArrayList) chapters);
+//                bundle.putString("title", data.getTitle());
+//                bundle.putString("number", data.getNumber());
+//                bundle.putString("audioAddress", data.getAudioAddress());
+//                bundle.putParcelableArrayList("chapters", (ArrayList) chapters);
                 fragment.setArguments(bundle);
 
                 // Replace the current fragment with the new one
