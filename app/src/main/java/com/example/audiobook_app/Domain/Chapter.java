@@ -12,7 +12,7 @@ import androidx.room.PrimaryKey;
 public class Chapter{
 
     @ColumnInfo(name = "book_id")
-    private int bookId;
+    private long bookId;
 
     @PrimaryKey(autoGenerate = true)
     private int chapterId;
@@ -68,11 +68,11 @@ public class Chapter{
     }
 
 
-    public int getBookId() {
+    public long getBookId() {
         return bookId;
     }
 
-    public void setBookId(int bookId) {
+    public void setBookId(long bookId) {
         this.bookId = bookId;
     }
 

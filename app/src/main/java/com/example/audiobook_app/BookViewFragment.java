@@ -38,6 +38,7 @@ public class BookViewFragment extends Fragment {
     Book book;
 
     MainActivity mainActivity;
+    boolean ifBookFoundInDb;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,7 @@ public class BookViewFragment extends Fragment {
         if (bundle != null)
         {
             bookID = bundle.getLong("id");
-            boolean ifBookFoundInDb = bundle.getBoolean("ifBookFoundInDb");
+            ifBookFoundInDb = bundle.getBoolean("ifBookFoundInDb");
             getBookData(bookID, ifBookFoundInDb);
         }
 
@@ -82,6 +83,11 @@ public class BookViewFragment extends Fragment {
         return binding.getRoot();
     }
 
+    /**
+     * Get the book data from the database or the main activity
+     * @param bookID The ID of the book
+     * @param ifBookFoundInDb If the book is found in the database
+     */
     private void getBookData(long bookID, boolean ifBookFoundInDb) {
         if(bookID != 0)
         {
@@ -155,20 +161,37 @@ public class BookViewFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //TODO: If the button is pressed download/save the book to the database and handle the history of the book (read timestamps and favourite chapters)
+        if(!ifBookFoundInDb) {
+            binding.buttonFirst.setText("Download");
+        }
+
+        //TODO: If the button is pressed download/save the book to the database and handle the history of the book (to read timestamps and favourite chapters)
         binding.buttonFirst.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 AudioplayerFragment fragment = new AudioplayerFragment();
 
-                Chapter data = chapters.get(0);
-                // Create a bundle to pass the book data
-                Bundle bundle = new Bundle();
+
+                if(!ifBookFoundInDb) {
+                    mainActivity.BookToDatabase(book); //stores in DB and downloads the chapters
+
+                    ifBookFoundInDb = true;
+                    binding.buttonFirst.setText("Play");
+                }
+                else{
+
+                    //TODO: Get the last read chapter
+                    Chapter data = chapters.get(0);
+
+                    // Create a bundle to pass the book data
+                    Bundle bundle = new Bundle();
 //                bundle.putString("title", data.getTitle());
 //                bundle.putString("number", data.getNumber());
 //                bundle.putString("audioAddress", data.getAudioAddress());
 //                bundle.putParcelableArrayList("chapters", (ArrayList) chapters);
-                fragment.setArguments(bundle);
+                    fragment.setArguments(bundle);
+                }
+
 
                 // Replace the current fragment with the new one
                 requireActivity().getSupportFragmentManager().beginTransaction()

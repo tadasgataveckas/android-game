@@ -23,6 +23,7 @@ import com.example.audiobook_app.Domain.AppDatabase;
 import com.example.audiobook_app.Domain.Book;
 import com.example.audiobook_app.Domain.BookGenerator;
 import com.example.audiobook_app.Domain.Chapter;
+import com.example.audiobook_app.Domain.DownloadHandler;
 import com.example.audiobook_app.HomeFragment;
 import com.example.audiobook_app.ProfileFragment;
 import com.example.audiobook_app.R;
@@ -115,19 +116,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void BooksToDatabase()
+    public void BookToDatabase(Book book)
     {
-        for (Book book : books) {
-            long bookId = db.bookDAO().insert(book); // this should return the id of the inserted book
-
-            List<Chapter> chapters = book.getChapters();
-            if (chapters != null) {
-                for (Chapter chapter : chapters) {
-                    chapter.setBookId((int)bookId);
-                    db.chapterDAO().insert(chapter);
-                }
-            }
+        if (book == null || book.getChapters() == null) {
+            return;
         }
+        DownloadBook(book);
+
+        long bookId = db.bookDAO().insert(book); // this should return the id of the inserted book
+        List<Chapter> chapters = book.getChapters();
+
+        for (Chapter chapter : chapters) {
+            chapter.setBookId((int)bookId);
+            db.chapterDAO().insert(chapter);
+        }
+    }
+
+    private void DownloadBook(Book book) {
+        DownloadHandler downloadHandler = new DownloadHandler(this);
+        List<Chapter> chapters = book.getChapters();
+
+        for (Chapter chapter : chapters) {
+            String oldURL = chapter.getAudioAddress();
+            String fileName =  book.getTitle() + "-" + chapter.getNumber();
+            String newURL = downloadHandler.downloadChapter(oldURL, fileName);
+            chapter.setAudioAddress(newURL);
+        }
+
     }
 
     public AppDatabase getDb()

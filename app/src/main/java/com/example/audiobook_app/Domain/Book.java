@@ -107,8 +107,8 @@ public class Book{
     }
 
     @NonNull
-    public ArrayList getChapters() {
-        return (ArrayList) chapters;
+    public List<Chapter> getChapters() {
+        return chapters;
     }
 
 
