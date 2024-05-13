@@ -57,7 +57,7 @@ public class DownloadHandler {
     }
 
     public String getDownloadPath(String fileName) {
-        return DOWNLOAD_LOCATION + fileName + ".mp3";
+        return fileName + ".mp3";
     }
 
 

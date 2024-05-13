@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -184,7 +185,11 @@ public class AudioplayerFragment extends Fragment {
         try {
             fis = new FileInputStream(audioFile);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            Log.e("AudioplayerFragment", "File not found: " + audioFile.getAbsolutePath());
+        }catch (SecurityException e) {
+            Log.e("AudioplayerFragment", "File access not granted: " + audioFile.getAbsolutePath());
+            //System.out.println("Permission to read external storage is not granted");
         }
 
         return fis;
