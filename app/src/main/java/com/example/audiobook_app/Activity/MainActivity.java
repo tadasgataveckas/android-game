@@ -1,7 +1,10 @@
 package com.example.audiobook_app.Activity;
 
+import android.Manifest;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,9 +13,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.media3.database.StandaloneDatabaseProvider;
+import androidx.media3.datasource.DefaultHttpDataSource;
+import androidx.media3.datasource.HttpDataSource;
+import androidx.media3.datasource.cache.Cache;
+import androidx.media3.datasource.cache.NoOpCacheEvictor;
+import androidx.media3.datasource.cache.SimpleCache;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -31,6 +42,7 @@ import com.example.audiobook_app.SettingsFragment;
 import com.example.audiobook_app.databinding.ActivityMainBinding;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,12 +64,14 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences(_preferencesName, Context.MODE_PRIVATE);
 
 
-        replaceFragment( new HomeFragment());
+        replaceFragment(new HomeFragment());
         initBottomNavigation();
         db = AppActivity.getDatabase(this);
 
         BookGenerator bookGenerator = new BookGenerator();
         books = bookGenerator.getBooks(this);
+
+
     }
 
     private void initBottomNavigation() {
@@ -138,10 +152,12 @@ public class MainActivity extends AppCompatActivity {
 
         for (Chapter chapter : chapters) {
             String oldURL = chapter.getAudioAddress();
-            String fileName =  book.getTitle() + "-" + chapter.getNumber();
-            String newURL = downloadHandler.downloadChapter(oldURL, fileName);
+            String fileName =  book.getTitle().replace(" ", "_") + "-" + chapter.getNumber();
+            String newURL = downloadHandler.getDownloadPath(fileName);
+            long downloadId = downloadHandler.downloadChapter(oldURL, fileName);
             chapter.setAudioAddress(newURL);
         }
+
 
     }
 
@@ -159,4 +175,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return -1;
     }
+
+
 }

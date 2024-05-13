@@ -43,6 +43,8 @@ dependencies {
     implementation("androidx.navigation:navigation-ui:2.6.0")
     implementation("androidx.room:room-common:2.6.1")
     implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.media3:media3-database:1.3.1")
+    implementation("androidx.media3:media3-datasource:1.3.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

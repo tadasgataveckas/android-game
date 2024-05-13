@@ -61,7 +61,8 @@ public class BookGenerator {
         HttpURLConnection connection = null;
         try {
             Log.d("BookGenerator", "Attempting to establish connection...");
-            URL url = new URL("https://librivox.org/api/feed/audiobooks/?limit=4");
+//            URL url = new URL("https://librivox.org/api/feed/audiobooks/?limit=4");
+            URL url = new URL("https://librivox.org/api/feed/audiobooks/?id=20469");
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             try {

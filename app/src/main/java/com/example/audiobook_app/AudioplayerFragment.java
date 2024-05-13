@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,10 +19,17 @@ import androidx.core.util.Pair;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.example.audiobook_app.Activity.MainActivity;
+import com.example.audiobook_app.Domain.Book;
+import com.example.audiobook_app.Domain.BookWithChapters;
 import com.example.audiobook_app.Domain.Chapter;
 import com.example.audiobook_app.Domain.FavoritesChapter;
 import com.example.audiobook_app.databinding.FragmentAudioplayerBinding;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,7 +41,7 @@ public class AudioplayerFragment extends Fragment {
     private FragmentAudioplayerBinding binding;
     private MediaPlayer mediaPlayer; // Declare MediaPlayer object
     //private int[] audioFiles = { R.raw.music, R.raw.music2, R.raw.music3}; // Example audio files
-    private int currentTrack = 0; // Index of the current audio track
+    private int currentTrack = 1; // Index of the current audio track
     private boolean isPlaying = false; // Flag to track audio playback state
     private SeekBar seekBar; // SeekBar for audio progress
     private Runnable updateSeekBar; // Runnable for updating SeekBar progress
@@ -59,18 +67,30 @@ public class AudioplayerFragment extends Fragment {
 
     List<Chapter> chapters;
     FavoritesChapter favChapter;
+    MainActivity mainActivity;
+
+    Book book;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+        mainActivity = (MainActivity) getActivity();
         binding = FragmentAudioplayerBinding.inflate(inflater, container, false);
 
         Bundle bundle = getArguments();
         if (bundle != null) {
-            String title = bundle.getString("title");
-            String author = bundle.getString("author");
-            String picAddress = bundle.getString("picAddress");
+            int chapterId = bundle.getInt("id");
+            long bookID  = bundle.getLong("bookId");
+
+            BookWithChapters bookWithChapters = mainActivity.getDb().bookDAO().getBookWithChapters((int) bookID);
+
+            book = bookWithChapters.user;
+            chapters = bookWithChapters.chapters;
+            Chapter chapter = chapters.get(chapterId);
+
+//            String title = chapter.getTitle();
+//            String author = bundle.getString("author");
+           // String picAddress = bundle.getString("picAddress");
 
 
            // FavoritesChapter chapter = bundle.getParcelableArrayList("favChapter");
@@ -155,11 +175,19 @@ public class AudioplayerFragment extends Fragment {
         mediaPlayer.seekTo(favChapter.getTimestamp());
     }
 
-    private int getAudioFileId(int currentTrack) {
-
+    private FileInputStream getAudioFileStream(int currentTrack) {
         String audioAddress = chapters.get(currentTrack).getAudioAddress();
-        int audioResourceId = getResources().getIdentifier(audioAddress, "raw", getContext().getPackageName());
-        return audioResourceId;
+        File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File audioFile = new File(downloadsDir, audioAddress);
+
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(audioFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return fis;
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -169,7 +197,15 @@ public class AudioplayerFragment extends Fragment {
 
 
 
-        mediaPlayer = MediaPlayer.create(requireContext(), getAudioFileId(currentTrack));
+        FileInputStream fis = getAudioFileStream(currentTrack);
+        mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(fis.getFD());
+            mediaPlayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         //String currentFileName = rawFileNames.get(audioFiles[currentTrack]);
         // Initialize SeekBar
         seekBar = binding.seekBar;
@@ -226,7 +262,7 @@ public class AudioplayerFragment extends Fragment {
                 // Check if there are more audio tracks available
                 if (currentTrack < chapters.size() - 1) {
                     // Save the current audio file and its timestamp before moving to the next track
-                    saveLastListened(getContext(), getResources().getResourceEntryName(getAudioFileId(currentTrack)), mediaPlayer.getCurrentPosition());
+                    //saveLastListened(getContext(), getResources().getResourceEntryName(getAudioFileId(currentTrack)), mediaPlayer.getCurrentPosition());
 
                     Pair<String, Long> lastListened = getLastListened(getContext());
                     lastListenedFileTextView.setText("Last Listened File: " + lastListened.first);
@@ -246,7 +282,7 @@ public class AudioplayerFragment extends Fragment {
             public void onClick(View view) {
                 // Check if it's possible to go back to the previous audio track
                 if (currentTrack > 0) {
-                    saveLastListened(getContext(), getResources().getResourceEntryName(getAudioFileId(currentTrack)), mediaPlayer.getCurrentPosition());
+                    //saveLastListened(getContext(), getResources().getResourceEntryName(getAudioFileId(currentTrack)), mediaPlayer.getCurrentPosition());
                     Pair<String, Long> lastListened = getLastListened(getContext());
                     lastListenedFileTextView.setText("Last Listened File: " + lastListened.first);
                     long minutes = TimeUnit.MILLISECONDS.toMinutes(lastListened.second);
@@ -324,7 +360,16 @@ public class AudioplayerFragment extends Fragment {
     private void playAudio() {
         mediaPlayer.stop();
         mediaPlayer.release();
-        mediaPlayer = MediaPlayer.create(requireContext(), getAudioFileId(currentTrack));
+
+        FileInputStream fis = getAudioFileStream(currentTrack);
+        mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(fis.getFD());
+            mediaPlayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         mediaPlayer.start();
 
         // Update SeekBar progress

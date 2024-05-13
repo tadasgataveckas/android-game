@@ -1,9 +1,15 @@
 package com.example.audiobook_app;
 
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -89,7 +95,7 @@ public class BookViewFragment extends Fragment {
      * @param ifBookFoundInDb If the book is found in the database
      */
     private void getBookData(long bookID, boolean ifBookFoundInDb) {
-        if(bookID != 0)
+        if(bookID == -1)
         {
             return;
         }
@@ -157,7 +163,7 @@ public class BookViewFragment extends Fragment {
 //        }
 //        return chapters;
 //    }
-
+private long downloadId;
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -165,7 +171,7 @@ public class BookViewFragment extends Fragment {
             binding.buttonFirst.setText("Download");
         }
 
-        //TODO: If the button is pressed download/save the book to the database and handle the history of the book (to read timestamps and favourite chapters)
+
         binding.buttonFirst.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -185,24 +191,54 @@ public class BookViewFragment extends Fragment {
 
                     // Create a bundle to pass the book data
                     Bundle bundle = new Bundle();
+                    bundle.putInt("id", data.getChapterId());
+                    bundle.putLong("bookId", data.getBookId());
+
 //                bundle.putString("title", data.getTitle());
 //                bundle.putString("number", data.getNumber());
 //                bundle.putString("audioAddress", data.getAudioAddress());
 //                bundle.putParcelableArrayList("chapters", (ArrayList) chapters);
                     fragment.setArguments(bundle);
+
+                    // Replace the current fragment with the new one
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.bookViewFragmentContainer, fragment)
+                            .addToBackStack(null)
+                            .commit();
+
                 }
 
 
-                // Replace the current fragment with the new one
-                requireActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.bookViewFragmentContainer, fragment)
-                        .addToBackStack(null)
-                        .commit();
-            }
+                            }
         });
     }
 
 
+//TODO: Implementuoti reakcija i siuntimo progresa ir pabaiga
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+//        requireActivity().registerReceiver(onDownloadComplete, filter);
+//    }
+//
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        requireActivity().unregisterReceiver(onDownloadComplete);
+//    }
+//
+//    private BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+//            if (downloadId == id) {
+//                Toast.makeText(context, "Download completed", Toast.LENGTH_SHORT).show();
+//                // Resume BookViewFragment actions here
+//            }
+//        }
+//    };
 
     @Override
     public void onDestroyView() {
