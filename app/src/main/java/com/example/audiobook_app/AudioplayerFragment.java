@@ -1,11 +1,14 @@
 package com.example.audiobook_app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.DocumentsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,6 +75,8 @@ public class AudioplayerFragment extends Fragment {
 
     Book book;
 
+    Uri directoryUri;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -88,20 +93,11 @@ public class AudioplayerFragment extends Fragment {
             book = bookWithChapters.user;
             chapters = bookWithChapters.chapters;
             Chapter chapter = chapters.get(chapterId);
-
-//            String title = chapter.getTitle();
-//            String author = bundle.getString("author");
-           // String picAddress = bundle.getString("picAddress");
-
-
-           // FavoritesChapter chapter = bundle.getParcelableArrayList("favChapter");
-            //TODO jei su FavoritesCHaapter ~  nustatytu laika metodas
-
-//            if(chapter != null)
-//            {
-//
-//            }
         }
+
+        directoryUri = mainActivity.GetDirectoryUri();
+
+        //region histrory and favorites
         View view = binding.getRoot();
         Button btnFavourite = view.findViewById(R.id.buttonFavourite);
         lastListenedFileTextView = view.findViewById(R.id.lastListenedFile);
@@ -133,88 +129,36 @@ public class AudioplayerFragment extends Fragment {
             }
         });
 
+//endregion
 
         return view;
     }
 
-
-    private void addToFavourites(String bookTitle){
-
-        //TODO irasyti Timestampa, dabartini chapter, chpateriai booko list, currentTrack i FavoritesChapter
-        //TODO persiusti FavoritesChapter -> MyFavourites
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
-        Set<String> favouriteSet = sharedPreferences.getStringSet("favouriteBooks", new HashSet<>());
-
-        FavoritesChapter favoritesChapter = new FavoritesChapter(mediaPlayer.getCurrentPosition(), chapters.get(currentTrack), chapters, currentTrack);
-
-
-        //TODO saveLastListened(getContext(), getResources().getResourceEntryName(getAudioFileId(currentTrack)), mediaPlayer.getCurrentPosition());
-        //TODO mediaPlayer.seekTo();
-
-        favouriteSet.add(bookTitle);
-        sharedPreferences.edit().putStringSet("favouriteBooks", favouriteSet).apply();
+    private Uri GetAudioUri(Uri directoryUri){
+        return DocumentsContract.buildDocumentUriUsingTree(directoryUri,
+                DocumentsContract.getTreeDocumentId(directoryUri) + "/" + chapters.get(currentTrack).getAudioAddress());
     }
 
-    private void removeFromFavourites(String bookTitle){
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
-        Set<String> favouriteSet = sharedPreferences.getStringSet("favouriteBooks", new HashSet<>());
-        favouriteSet.remove(bookTitle);
-        sharedPreferences.edit().putStringSet("favouriteBooks", favouriteSet).apply();
-    }
-
-    //TODO paleist kai kviecia metoda
-    private Set<String> getFavouriteBooks() {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
-
-        return sharedPreferences.getStringSet("favouriteBooks", new HashSet<>());
-    }
-
-    public void setFavoriteChapter() {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
-
-
-        mediaPlayer.seekTo(favChapter.getTimestamp());
-    }
-
-    private FileInputStream getAudioFileStream(int currentTrack) {
-        String audioAddress = chapters.get(currentTrack).getAudioAddress();
-        File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File audioFile = new File(downloadsDir, audioAddress);
-
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(audioFile);
-        } catch (FileNotFoundException e) {
-            //e.printStackTrace();
-            Log.e("AudioplayerFragment", "File not found: " + audioFile.getAbsolutePath());
-        }catch (SecurityException e) {
-            Log.e("AudioplayerFragment", "File access not granted: " + audioFile.getAbsolutePath());
-            //System.out.println("Permission to read external storage is not granted");
-        }
-
-        return fis;
-    }
-
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        //initializeRawFileNames();
-        // Initialize MediaPlayer with the first audio track
-
-
-
-        FileInputStream fis = getAudioFileStream(currentTrack);
+    private void PreparePlayer()
+    {
         mediaPlayer = new MediaPlayer();
         try {
-            mediaPlayer.setDataSource(fis.getFD());
+            mediaPlayer.setDataSource(mainActivity, GetAudioUri(directoryUri));
             mediaPlayer.prepare();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
-        //String currentFileName = rawFileNames.get(audioFiles[currentTrack]);
+
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
+        PreparePlayer();
+
         // Initialize SeekBar
         seekBar = binding.seekBar;
-
         // Set SeekBar max value to the duration of the audio track
         seekBar.setMax(mediaPlayer.getDuration());
 
@@ -244,6 +188,8 @@ public class AudioplayerFragment extends Fragment {
                 handler.postDelayed(this, 1000);
             }
         }, 0);
+
+        //region Buttons
 
         // Set click listener for stop button
         binding.stop.setOnClickListener(new View.OnClickListener() {
@@ -299,6 +245,9 @@ public class AudioplayerFragment extends Fragment {
                 }
             }
         });
+        //endregion
+
+        //region SeekBar
 
         // Update SeekBar progress while audio is playing
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -335,7 +284,10 @@ public class AudioplayerFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {}
+
+
         });
+
 
         // Initialize Runnable for updating SeekBar progress
         updateSeekBar = new Runnable() {
@@ -349,6 +301,7 @@ public class AudioplayerFragment extends Fragment {
                 seekBar.postDelayed(this, 1000);
             }
         };
+        //endregion
 
         // Start audio playback
         playAudio();
@@ -366,14 +319,7 @@ public class AudioplayerFragment extends Fragment {
         mediaPlayer.stop();
         mediaPlayer.release();
 
-        FileInputStream fis = getAudioFileStream(currentTrack);
-        mediaPlayer = new MediaPlayer();
-        try {
-            mediaPlayer.setDataSource(fis.getFD());
-            mediaPlayer.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        PreparePlayer();
 
         mediaPlayer.start();
 
@@ -402,6 +348,7 @@ public class AudioplayerFragment extends Fragment {
         binding = null;
     }
 
+    //region History
     /**
      * Save the last listened audio file and its timestamp
      * @param context Application context
@@ -427,6 +374,46 @@ public class AudioplayerFragment extends Fragment {
         long timestamp = sharedPreferences.getLong("Timestamp", 0);
         return new Pair<>(fileName, timestamp);
     }
+    //endregion
 
+    //region Favorites
+    private void addToFavourites(String bookTitle){
+
+        //TODO irasyti Timestampa, dabartini chapter, chpateriai booko list, currentTrack i FavoritesChapter
+        //TODO persiusti FavoritesChapter -> MyFavourites
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
+        Set<String> favouriteSet = sharedPreferences.getStringSet("favouriteBooks", new HashSet<>());
+
+        FavoritesChapter favoritesChapter = new FavoritesChapter(mediaPlayer.getCurrentPosition(), chapters.get(currentTrack), chapters, currentTrack);
+
+
+        //TODO saveLastListened(getContext(), getResources().getResourceEntryName(getAudioFileId(currentTrack)), mediaPlayer.getCurrentPosition());
+        //TODO mediaPlayer.seekTo();
+
+        favouriteSet.add(bookTitle);
+        sharedPreferences.edit().putStringSet("favouriteBooks", favouriteSet).apply();
+    }
+
+    private void removeFromFavourites(String bookTitle){
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
+        Set<String> favouriteSet = sharedPreferences.getStringSet("favouriteBooks", new HashSet<>());
+        favouriteSet.remove(bookTitle);
+        sharedPreferences.edit().putStringSet("favouriteBooks", favouriteSet).apply();
+    }
+
+    //TODO paleist kai kviecia metoda
+    private Set<String> getFavouriteBooks() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
+
+        return sharedPreferences.getStringSet("favouriteBooks", new HashSet<>());
+    }
+
+    public void setFavoriteChapter() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
+
+
+        mediaPlayer.seekTo(favChapter.getTimestamp());
+    }
+//endregion
 
 }

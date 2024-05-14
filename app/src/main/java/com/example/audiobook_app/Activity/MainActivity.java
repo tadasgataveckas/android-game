@@ -1,12 +1,17 @@
 package com.example.audiobook_app.Activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.Menu;
@@ -50,9 +55,12 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     private static final String _preferencesName = "MyFavourites";
+    private static final String _preferencesDirectory = "BookDirectory";
 
     private AppDatabase db; //permanent database for books
     public List<Book> books; //temporary storage for books
+
+    private Uri directoryUri;
 
 
     @Override
@@ -71,6 +79,12 @@ public class MainActivity extends AppCompatActivity {
         BookGenerator bookGenerator = new BookGenerator();
         books = bookGenerator.getBooks(this);
 
+        String directoryUriString = sharedPreferences.getString("directory_uri", null);
+        if (directoryUriString != null) {
+            directoryUri = Uri.parse(directoryUriString);
+        } else {
+            ObtainDirectory();
+        }
 
     }
 
@@ -176,5 +190,38 @@ public class MainActivity extends AppCompatActivity {
         return -1;
     }
 
+
+    public Uri GetDirectoryUri() {
+
+        return directoryUri;
+    }
+
+    //This should be called early
+    void ObtainDirectory() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+        mGetContent.launch(intent);
+    }
+
+    private final ActivityResultLauncher<Intent> mGetContent = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null) {
+                        directoryUri = data.getData();
+
+                        // Save access permissions
+                        int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+                        getContentResolver().takePersistableUriPermission(directoryUri, takeFlags);
+
+                        // Save the directory Uri to SharedPreferences
+                        SharedPreferences sharedPreferences = getSharedPreferences(_preferencesDirectory, Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("directory_uri", directoryUri.toString());
+                        editor.apply();
+                    }
+                }
+            }
+    );
 
 }
