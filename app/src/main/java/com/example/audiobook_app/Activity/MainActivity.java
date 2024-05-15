@@ -3,6 +3,7 @@ package com.example.audiobook_app.Activity;
 import android.Manifest;
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -79,7 +80,8 @@ public class MainActivity extends AppCompatActivity {
         BookGenerator bookGenerator = new BookGenerator();
         books = bookGenerator.getBooks(this);
 
-        String directoryUriString = sharedPreferences.getString("directory_uri", null);
+        SharedPreferences sharedPreferences2 = getSharedPreferences(_preferencesDirectory, Context.MODE_PRIVATE);
+        String directoryUriString = sharedPreferences2.getString("directory_uri", null);
         if (directoryUriString != null) {
             directoryUri = Uri.parse(directoryUriString);
         } else {
@@ -161,14 +163,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void DownloadBook(Book book) {
-        DownloadHandler downloadHandler = new DownloadHandler(this);
+
+        DownloadHandler downloadHandler = new DownloadHandler(this, directoryUri);
         List<Chapter> chapters = book.getChapters();
 
         for (Chapter chapter : chapters) {
             String oldURL = chapter.getAudioAddress();
             String fileName =  book.getTitle().replace(" ", "_") + "-" + chapter.getNumber();
             String newURL = downloadHandler.getDownloadPath(fileName);
-            long downloadId = downloadHandler.downloadChapter(oldURL, fileName);
+            downloadHandler.downloadChapter(oldURL, fileName);
             chapter.setAudioAddress(newURL);
         }
 
