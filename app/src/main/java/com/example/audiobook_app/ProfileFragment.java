@@ -25,7 +25,7 @@ import java.util.Set;
 
 public class ProfileFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private ListView listView;
     private ArrayAdapter<String> adapter;

@@ -32,10 +32,10 @@ public class CarouselActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
         ArrayList<Book> items = new ArrayList<>();
-        items.add(new Book("Soul", "Olivia Wilson", "@drawable/b1"));
-        items.add(new Book("Harry Potter", "J.K. Rowling", "@drawable/b2"));
-        items.add(new Book("A Million To One", "Tony Faggioli", "@drawable/b3"));
-        items.add(new Book("Educated", "Tara Westover", "@drawable/b4"));
+        items.add(new Book("Soul", "Olivia Wilson", "", "@drawable/b1"));
+        items.add(new Book("Harry Potter", "J.K. Rowling", "","@drawable/b2"));
+        items.add(new Book("A Million To One", "Tony Faggioli", "","@drawable/b3"));
+        items.add(new Book("Educated", "Tara Westover", "","@drawable/b4"));
 
         recyclerViewBooks =findViewById(R.id.view1);
         recyclerViewBooks.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));

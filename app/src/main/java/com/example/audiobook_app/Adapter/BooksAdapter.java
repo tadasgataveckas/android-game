@@ -74,6 +74,11 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.Viewholder> 
         return items.size();
     }
 
+    public int getBookIndex(Book book) {
+        return items.indexOf(book);
+    }
+
+
     public class Viewholder extends RecyclerView.ViewHolder{
         TextView title, author;
         ImageView pic;
@@ -86,4 +91,7 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.Viewholder> 
             pic = itemView.findViewById(R.id.pic);
         }
     }
+
+
+
 }

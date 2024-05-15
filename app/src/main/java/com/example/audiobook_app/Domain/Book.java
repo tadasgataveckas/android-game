@@ -1,14 +1,13 @@
 package com.example.audiobook_app.Domain;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.util.ArrayList;
 import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ColumnInfo;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+
 /**
  * Carousel book data
  */
@@ -16,7 +15,7 @@ import androidx.room.PrimaryKey;
 public class Book{
 
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private long id;
     @NonNull
     @ColumnInfo(name = "title")
     private String title;
@@ -32,26 +31,43 @@ public class Book{
     private String description;
 
     @NonNull
-    @ColumnInfo(name = "chapters")
+    @ColumnInfo(name = "bookURL")
+    private String bookURL;
+
+
+
+//    @Relation(parentColumn = "id", entityColumn = "book_id", entity = Chapter.class)
+    @Ignore
     private List<Chapter> chapters;
 
 
-    public Book(@NonNull String title,
-                @NonNull String author,
-                @NonNull String picAddress) {
-        this.title = title;
-        this.author = author;
-        this.picAddress = picAddress;
+//    public Book(@NonNull String title,
+//                @NonNull String author,
+//                @NonNull String picAddress) {
+//        this.title = title;
+//        this.author = author;
+//        this.picAddress = picAddress;
+//    }
+    public Book()
+    {
+        this.title = "Title";
+        this.author = "author";
+        this.picAddress = "picAddress";
+        this.description = "description";
+        this.bookURL = "bookURL";
+        this.chapters = new ArrayList<>();
     }
 
     public Book(@NonNull String title,
                 @NonNull String author,
                 @NonNull String description,
-                @NonNull String picAddress) {
+                @NonNull String picAddress)
+    {
         this.title = title;
         this.author = author;
         this.picAddress = picAddress;
         this.description = description;
+        this.chapters = new ArrayList<>();
     }
 
     @NonNull
@@ -82,7 +98,7 @@ public class Book{
     }
 
     @NonNull
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -91,8 +107,8 @@ public class Book{
     }
 
     @NonNull
-    public ArrayList getChapters() {
-        return (ArrayList) chapters;
+    public List<Chapter> getChapters() {
+        return chapters;
     }
 
 
@@ -102,4 +118,25 @@ public class Book{
     }
 
 
+    @NonNull
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(@NonNull String description) {
+        this.description = description;
+    }
+
+    @NonNull
+    public String getBookURL() {
+        return bookURL;
+    }
+
+    public void setBookURL(@NonNull String bookURL) {
+        this.bookURL = bookURL;
+    }
+
+    public void addChapter(Chapter currentChapter) {
+        chapters.add(currentChapter);
+    }
 }

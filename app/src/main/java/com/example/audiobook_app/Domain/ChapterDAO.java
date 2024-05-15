@@ -12,9 +12,14 @@ public interface ChapterDAO{
     @Insert
     void insert(Chapter chapter);
 
+    @Insert
+    void insertAll(List<Chapter> chapters);
+
     @Query("Delete from Chapter")
     void deleteAll();
 
     @Query("Select * from Chapter Order by number ASC")
     List<Chapter> getAllChapters();
+
+
 }

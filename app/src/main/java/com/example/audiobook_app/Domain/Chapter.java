@@ -6,10 +6,16 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 @Entity
-public class Chapter implements Parcelable{
+public class Chapter{
 
+    @ColumnInfo(name = "book_id")
+    private long bookId;
+
+    @PrimaryKey(autoGenerate = true)
+    private int chapterId;
     @NonNull
     @ColumnInfo(name = "number")
     private String number;
@@ -21,6 +27,12 @@ public class Chapter implements Parcelable{
     @NonNull
     @ColumnInfo(name = "audioAddress")
     private String audioAddress;
+
+    public Chapter() {
+        this.number = "0";
+        this.title = "title";
+        this.audioAddress = "audioAddress";
+    }
 
     public Chapter(@NonNull String number, @NonNull String title, @NonNull String audioAddress) {
         this.number = number;
@@ -56,34 +68,19 @@ public class Chapter implements Parcelable{
     }
 
 
-
-    protected Chapter(Parcel in) {
-        number = in.readString();
-        title = in.readString();
-        audioAddress = in.readString();
+    public long getBookId() {
+        return bookId;
     }
 
-    public static final Parcelable.Creator<Chapter> CREATOR = new Creator<Chapter>() {
-        @Override
-        public Chapter createFromParcel(Parcel in) {
-            return new Chapter(in);
-        }
-
-        @Override
-        public Chapter[] newArray(int size) {
-            return new Chapter[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
+    public void setBookId(long bookId) {
+        this.bookId = bookId;
     }
 
-    @Override
-    public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeString(number);
-        dest.writeString(title);
-        dest.writeString(audioAddress);
+    public int getChapterId() {
+        return chapterId;
+    }
+
+    public void setChapterId(int chapterId) {
+        this.chapterId = chapterId;
     }
 }

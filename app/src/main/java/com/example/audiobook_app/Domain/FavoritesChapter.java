@@ -56,36 +56,5 @@ public class FavoritesChapter {
     }
 
 
-//    protected Chapter(Parcel in) {
-//        timestamp = in.readInt();
-//        currentChapter = in.readValue();
-//        chapters = in.readArrayList();
-//        currentTrack = in.readInt();
-//    }
-//
-//    public static final Parcelable.Creator<Chapter> CREATOR = new Parcelable.Creator<Chapter>() {
-//        @Override
-//        public Chapter createFromParcel(Parcel in) {
-//            return new Chapter(in);
-//        }
-//
-//        @Override
-//        public Chapter[] newArray(int size) {
-//            return new Chapter[size];
-//        }
-//    };
-//
-//    @Override
-//    public int describeContents() {
-//        return 0;
-//    }
-//
-//
-//    @Override
-//    public void writeToParcel(@NonNull Parcel dest, int flags) {
-//        dest.writeInt(timestamp);
-//        dest.writeValue(currentChapter);
-//        dest.writeArray(chapters);
-//        dest.writeInt(currentTrack);
-//    }
+
 }

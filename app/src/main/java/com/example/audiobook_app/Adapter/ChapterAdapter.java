@@ -16,19 +16,16 @@ import java.util.List;
 
 public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterViewHolder> {
     private List<Chapter> chapters;
-
     private ClickListener<Chapter> clickListener;
 
     public ChapterAdapter(List<Chapter> chapters) {
         this.chapters = chapters;
     }
-
     public void setOnItemClickListener(ClickListener<Chapter> chapterClickListener) {
         this.clickListener = chapterClickListener;
     }
 
     // constructor and other methods
-
     @NonNull
     @Override
     public ChapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
