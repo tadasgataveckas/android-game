@@ -115,14 +115,14 @@ public class AudioplayerFragment extends Fragment {
                 isFavourite =!isFavourite;
                 String currentFileName = chapters.get(currentTrack).getTitle();
                 if (isFavourite) {
-
-                    addToFavourites(currentFileName + " " + mediaPlayer.getCurrentPosition());
+                    saveFavoriteChapter();
                     Toast toast = new Toast(getContext());
                     toast.setText("Added" + currentFileName);
                     toast.show();
                 }
                 else{
-                removeFromFavourites(currentFileName);
+                    removeFavoriteChapter();
+               // removeFromFavourites(currentFileName);
                 Toast toast = new Toast(getContext());
                 toast.setText("removed" + currentFileName);
                 toast.show();
@@ -134,6 +134,8 @@ public class AudioplayerFragment extends Fragment {
 
         return view;
     }
+
+
 
     private Uri GetAudioUri(Uri directoryUri){
         return DocumentsContract.buildDocumentUriUsingTree(directoryUri,
@@ -314,6 +316,20 @@ public class AudioplayerFragment extends Fragment {
         int chapterProgressesID = readingProgress.chapterProgresses.get(currentTrack).id;
         int newTimestamp = mediaPlayer.getCurrentPosition();
         mainActivity.getDb().chapterProgressDAO().update(chapterProgressesID, newTimestamp);
+    }
+
+    private void saveFavoriteChapter() {
+        int chapterID = chapters.get(currentTrack).getChapterId();
+        int newTimestamp = mediaPlayer.getCurrentPosition();
+        if(mainActivity.getDb().favoriteChapterDAO().getFavorite(chapterID) == null)
+            mainActivity.getDb().favoriteChapterDAO().insert(new FavoriteChapter(chapterID, newTimestamp));
+        else
+            mainActivity.getDb().favoriteChapterDAO().update(chapterID, newTimestamp);
+    }
+
+    private void removeFavoriteChapter() {
+        int chapterID = chapters.get(currentTrack).getChapterId();
+        mainActivity.getDb().favoriteChapterDAO().delete(chapterID);
     }
 
     private void playAudio() {

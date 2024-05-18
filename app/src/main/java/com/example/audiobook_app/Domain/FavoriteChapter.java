@@ -16,7 +16,8 @@ public class FavoriteChapter {
     public int timestamp;
 
 
-
-
-
+    public FavoriteChapter(int chapterId, int timestamp) {
+        this.chapterId = chapterId;
+        this.timestamp = timestamp;
+    }
 }

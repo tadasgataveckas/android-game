@@ -19,4 +19,13 @@ public interface FavoriteChapterDAO {
 
     @Query("Select * from FavoriteChapter Order by id ASC")
     List<FavoriteChapter> getAllFavorites();
+
+    @Query("Select * from FavoriteChapter WHERE chapter_id = :chapterID")
+    FavoriteChapter getFavorite(int chapterID);
+
+    @Query("UPDATE FavoriteChapter SET timestamp = :newTimestamp WHERE chapter_id = :chapterID")
+    void update(int chapterID, int newTimestamp);
+
+    @Query("Delete from FavoriteChapter where chapter_id = :chapterID")
+    void delete(int chapterID);
 }
