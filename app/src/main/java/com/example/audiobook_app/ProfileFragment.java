@@ -10,10 +10,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import com.example.audiobook_app.Activity.MainActivity;
+import com.example.audiobook_app.Domain.Book;
+import com.example.audiobook_app.Domain.Chapter;
+import com.example.audiobook_app.Domain.FavoriteChapter;
+import com.example.audiobook_app.Domain.TimeFormatter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -29,13 +38,15 @@ public class ProfileFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private ListView listView;
     private ArrayAdapter<String> adapter;
-    private Set<String> favouriteSet;
+    //private Set<String> favouriteSet;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    MainActivity mainActivity;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -62,6 +73,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mainActivity = (MainActivity) getActivity();
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -74,13 +86,21 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_profile, container, false);
         listView = view.findViewById(R.id.favouriteBooks);
-        favouriteSet = getFavoritesFromSharedPreferences();
-        ArrayList<String> favouriteList = new ArrayList<>(favouriteSet);
-        adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1,favouriteList);
+
+        List<FavoriteChapter> favourites = mainActivity.getDb().favoriteChapterDAO().getAllFavorites();
+        List<Chapter> chapters = mainActivity.getDb().chapterDAO().getAllChapters();
+        List<Book> books = mainActivity.getDb().bookDAO().getAllBooks();
+        List<String> favouriteDetails = new ArrayList<>();
+
+        for (FavoriteChapter favourite : favourites) {
+            favouriteDetails.add("Book title: " + books.get((int)chapters.get(favourite.chapterId).getBookId()-1).getTitle() +
+                    "\nChapter title: " + chapters.get(favourite.chapterId).getTitle() +
+                    "\nTimestamp: " + TimeFormatter.formatTime(favourite.timestamp));
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, favouriteDetails);
         listView.setAdapter(adapter);
-        //TODO sukurti chapter adapter ir i ji ideti onClick() FavoritesChapter (ChapterAdapter ima tik chapterius tai galima pakeist tik onclick())
-        //TODO sukurti FavoritesChapterAdapter ir i ji ideti onClick() FavoritesChapter
-        //TODO onclick to audioPlayerFragment
+
         return view;
     }
 

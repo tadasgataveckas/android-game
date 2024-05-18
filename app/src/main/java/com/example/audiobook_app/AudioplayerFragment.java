@@ -1,15 +1,12 @@
 package com.example.audiobook_app;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.provider.DocumentsContract;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,17 +24,16 @@ import com.example.audiobook_app.Activity.MainActivity;
 import com.example.audiobook_app.Domain.Book;
 import com.example.audiobook_app.Domain.BookWithChapters;
 import com.example.audiobook_app.Domain.Chapter;
-import com.example.audiobook_app.Domain.FavoritesChapter;
+import com.example.audiobook_app.Domain.FavoriteChapter;
+import com.example.audiobook_app.Domain.ReadingProgress;
+import com.example.audiobook_app.Domain.ReadingProgressWithChapters;
+import com.example.audiobook_app.Domain.TimeFormatter;
 import com.example.audiobook_app.databinding.FragmentAudioplayerBinding;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 //Roko Kaulecko
 public class AudioplayerFragment extends Fragment {
@@ -70,10 +66,11 @@ public class AudioplayerFragment extends Fragment {
 //    }
 
     List<Chapter> chapters;
-    FavoritesChapter favChapter;
+    FavoriteChapter favChapter;
     MainActivity mainActivity;
 
     Book book;
+    ReadingProgress readingProgress;
 
     Uri directoryUri;
 
@@ -85,14 +82,18 @@ public class AudioplayerFragment extends Fragment {
 
         Bundle bundle = getArguments();
         if (bundle != null) {
-            int chapterId = bundle.getInt("id");
+            int chapterIndex = bundle.getInt("index");
             long bookID  = bundle.getLong("bookId");
 
             BookWithChapters bookWithChapters = mainActivity.getDb().bookDAO().getBookWithChapters((int) bookID);
 
             book = bookWithChapters.user;
             chapters = bookWithChapters.chapters;
-            Chapter chapter = chapters.get(chapterId);
+            currentTrack = chapterIndex;
+
+            ReadingProgressWithChapters historyWithChapters = mainActivity.getDb().readingProgressDAO().getReadingProgress((int) bookID);
+            readingProgress = historyWithChapters.readingProgress;
+            readingProgress.chapterProgresses = historyWithChapters.chapters;
         }
 
         directoryUri = mainActivity.GetDirectoryUri();
@@ -114,14 +115,14 @@ public class AudioplayerFragment extends Fragment {
                 isFavourite =!isFavourite;
                 String currentFileName = chapters.get(currentTrack).getTitle();
                 if (isFavourite) {
-
-                    addToFavourites(currentFileName + " " + mediaPlayer.getCurrentPosition());
+                    saveFavoriteChapter();
                     Toast toast = new Toast(getContext());
                     toast.setText("Added" + currentFileName);
                     toast.show();
                 }
                 else{
-                removeFromFavourites(currentFileName);
+                    removeFavoriteChapter();
+               // removeFromFavourites(currentFileName);
                 Toast toast = new Toast(getContext());
                 toast.setText("removed" + currentFileName);
                 toast.show();
@@ -133,6 +134,8 @@ public class AudioplayerFragment extends Fragment {
 
         return view;
     }
+
+
 
     private Uri GetAudioUri(Uri directoryUri){
         return DocumentsContract.buildDocumentUriUsingTree(directoryUri,
@@ -171,12 +174,8 @@ public class AudioplayerFragment extends Fragment {
                     int mRemainingPosition = mediaPlayer.getDuration(); // In milliseconds
 
                     // Convert the positions from milliseconds to minutes and seconds
-                    String currentTime = String.format("%02d:%02d",
-                            TimeUnit.MILLISECONDS.toMinutes(mCurrentPosition),
-                            TimeUnit.MILLISECONDS.toSeconds(mCurrentPosition) % 60);
-                    String remainingTime = String.format("%02d:%02d",
-                            TimeUnit.MILLISECONDS.toMinutes(mRemainingPosition),
-                            TimeUnit.MILLISECONDS.toSeconds(mRemainingPosition) % 60);
+                    String currentTime = TimeFormatter.formatTime(mCurrentPosition);
+                    String remainingTime = TimeFormatter.formatTime(mRemainingPosition);
 
                     // Update the TextViews
                     currentTimeTextView.setText(currentTime);
@@ -217,9 +216,7 @@ public class AudioplayerFragment extends Fragment {
 
                     Pair<String, Long> lastListened = getLastListened(getContext());
                     lastListenedFileTextView.setText("Last Listened File: " + lastListened.first);
-                    long minutes = TimeUnit.MILLISECONDS.toMinutes(lastListened.second);
-                    long seconds = TimeUnit.MILLISECONDS.toSeconds(lastListened.second) % 60;
-                    lastListenedTimestampTextView.setText("Last Stopped At: " + String.format("%02d:%02d", minutes, seconds));
+                    lastListenedTimestampTextView.setText("Last Stopped At: " + TimeFormatter.formatTime(lastListened.second));
 
                     currentTrack++; // Move to the next track
                     playAudio(); // Play the new audio track
@@ -236,9 +233,8 @@ public class AudioplayerFragment extends Fragment {
                     //saveLastListened(getContext(), getResources().getResourceEntryName(getAudioFileId(currentTrack)), mediaPlayer.getCurrentPosition());
                     Pair<String, Long> lastListened = getLastListened(getContext());
                     lastListenedFileTextView.setText("Last Listened File: " + lastListened.first);
-                    long minutes = TimeUnit.MILLISECONDS.toMinutes(lastListened.second);
-                    long seconds = TimeUnit.MILLISECONDS.toSeconds(lastListened.second) % 60;
-                    lastListenedTimestampTextView.setText("Last Stopped At: " + String.format("%02d:%02d", minutes, seconds));
+
+                    lastListenedTimestampTextView.setText("Last Stopped At: " + TimeFormatter.formatTime(lastListened.second));
 
                     currentTrack--; // Move to the previous track
                     playAudio(); // Play the new audio track
@@ -253,7 +249,7 @@ public class AudioplayerFragment extends Fragment {
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-                seekBar.setProgress(0);
+                seekBar.setProgress(readingProgress.chapterProgresses.get(currentTrack).lastReadTimestamp);
                 seekBar.setMax(mp.getDuration());
                 mp.start();
             }
@@ -310,12 +306,34 @@ public class AudioplayerFragment extends Fragment {
         //setFavoriteChapterTime();
         if(favChapter != null)
         {
-            mediaPlayer.seekTo(favChapter.getTimestamp());
+           // mediaPlayer.seekTo(favChapter.getTimestamp());
         }
 
     }
 
+
+    private void saveAudioProgress() {
+        int chapterProgressesID = readingProgress.chapterProgresses.get(currentTrack).id;
+        int newTimestamp = mediaPlayer.getCurrentPosition();
+        mainActivity.getDb().chapterProgressDAO().update(chapterProgressesID, newTimestamp);
+    }
+
+    private void saveFavoriteChapter() {
+        int chapterID = chapters.get(currentTrack).getChapterId();
+        int newTimestamp = mediaPlayer.getCurrentPosition();
+        if(mainActivity.getDb().favoriteChapterDAO().getFavorite(chapterID) == null)
+            mainActivity.getDb().favoriteChapterDAO().insert(new FavoriteChapter(chapterID, newTimestamp));
+        else
+            mainActivity.getDb().favoriteChapterDAO().update(chapterID, newTimestamp);
+    }
+
+    private void removeFavoriteChapter() {
+        int chapterID = chapters.get(currentTrack).getChapterId();
+        mainActivity.getDb().favoriteChapterDAO().delete(chapterID);
+    }
+
     private void playAudio() {
+        saveAudioProgress();
         mediaPlayer.stop();
         mediaPlayer.release();
 
@@ -332,6 +350,7 @@ public class AudioplayerFragment extends Fragment {
     public void onPause() {
         super.onPause();
         if (mediaPlayer != null) {
+            saveAudioProgress();
             mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = null;
@@ -341,6 +360,7 @@ public class AudioplayerFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         if (mediaPlayer != null) {
+            saveAudioProgress();
             mediaPlayer.release(); // Release the MediaPlayer resources
         }
         // Remove the callbacks to stop updating the SeekBar progress
@@ -384,7 +404,7 @@ public class AudioplayerFragment extends Fragment {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
         Set<String> favouriteSet = sharedPreferences.getStringSet("favouriteBooks", new HashSet<>());
 
-        FavoritesChapter favoritesChapter = new FavoritesChapter(mediaPlayer.getCurrentPosition(), chapters.get(currentTrack), chapters, currentTrack);
+        //FavoritesChapter favoritesChapter = new FavoritesChapter(mediaPlayer.getCurrentPosition(), chapters.get(currentTrack), chapters, currentTrack);
 
 
         //TODO saveLastListened(getContext(), getResources().getResourceEntryName(getAudioFileId(currentTrack)), mediaPlayer.getCurrentPosition());
@@ -412,7 +432,7 @@ public class AudioplayerFragment extends Fragment {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyFavourites", Context.MODE_PRIVATE);
 
 
-        mediaPlayer.seekTo(favChapter.getTimestamp());
+       // mediaPlayer.seekTo(favChapter.getTimestamp());
     }
 //endregion
 
