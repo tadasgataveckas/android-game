@@ -26,6 +26,9 @@ import com.example.audiobook_app.Domain.AppDatabase;
 import com.example.audiobook_app.Domain.Book;
 import com.example.audiobook_app.Domain.BookWithChapters;
 import com.example.audiobook_app.Domain.Chapter;
+import com.example.audiobook_app.Domain.ChapterProgress;
+import com.example.audiobook_app.Domain.ReadingProgress;
+import com.example.audiobook_app.Domain.ReadingProgressWithChapters;
 import com.example.audiobook_app.databinding.FragmentBookViewBinding;
 
 import java.util.ArrayList;
@@ -39,9 +42,11 @@ public class BookViewFragment extends Fragment {
     private OnBackPressedCallback callback;
     private RecyclerView recyclerView;
     private ChapterAdapter chapterAdapter;
-    List<Chapter> chapters;
 
+    List<Chapter> chapters;
     Book book;
+
+    ReadingProgress readingProgress;
 
     MainActivity mainActivity;
     boolean ifBookFoundInDb;
@@ -104,15 +109,30 @@ public class BookViewFragment extends Fragment {
 
             book = bookWithChapters.user;
             chapters = bookWithChapters.chapters;
+
+            ReadingProgressWithChapters historyWithChapters = mainActivity.getDb().readingProgressDAO().getReadingProgress((int) bookID);
+            readingProgress = historyWithChapters.readingProgress;
+            readingProgress.chapterProgresses = historyWithChapters.chapters;
         }
         else{
             book = mainActivity.books.get((int)bookID);
             chapters = mainActivity.books.get((int)bookID).getChapters();
+
+            readingProgress = new ReadingProgress();
+            readingProgress.bookId = (int)book.getId();
+            readingProgress.lastReadChapterId = 0;
+            readingProgress.chapterProgresses = new ArrayList<>();
+            for (Chapter chapter : chapters){
+                int fakeId = 0;
+                ChapterProgress chapterProgress = new ChapterProgress(fakeId, 0);
+                readingProgress.chapterProgresses.add(chapterProgress);
+            }
+
         }
 
         // Set the chapter list
         recyclerView = binding.chapterList;
-        initChapterList(chapters);
+        initChapterList(chapters, readingProgress.chapterProgresses);
         // Set the book data to the views
         binding.pavadinimas.setText(book.getTitle());
         binding.autorius.setText(book.getAuthor());
@@ -120,9 +140,14 @@ public class BookViewFragment extends Fragment {
         Glide.with(getContext()).load(drawableResourceId).into(binding.bookCover);
     }
 
-    private void initChapterList(List<Chapter> chapters) {
 
-        chapterAdapter = new ChapterAdapter(chapters);
+    /**
+     * Initialize the chapter list
+     * @param chapters The list of chapters
+     */
+    private void initChapterList(List<Chapter> chapters, List<ChapterProgress> chapterProgresses) {
+
+        chapterAdapter = new ChapterAdapter(chapters, chapterProgresses);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         ((ChapterAdapter) chapterAdapter).setOnItemClickListener(new ClickListener<Chapter>(){
@@ -132,15 +157,12 @@ public class BookViewFragment extends Fragment {
                 // Create a new instance of the fragment
                 AudioplayerFragment fragment = new AudioplayerFragment();
 
+
                 // Create a bundle to pass the book data
                 Bundle bundle = new Bundle();
-                bundle.putString("title", data.getTitle());
-                bundle.putString("number", data.getNumber());
-                bundle.putString("audioAddress", data.getAudioAddress());
-               // bundle.putParcelableArrayList("chapters", (ArrayList) chapters);
+                bundle.putInt("index", chapters.indexOf(data));
+                bundle.putLong("bookId", data.getBookId());
                 fragment.setArguments(bundle);
-
-
 
                 // Replace the current fragment with the new one
                 requireActivity().getSupportFragmentManager().beginTransaction()
@@ -153,17 +175,6 @@ public class BookViewFragment extends Fragment {
         recyclerView.setAdapter(chapterAdapter);
     }
 
-//    //Creates a mock-up list of chapters
-//
-//    private List<Chapter> getChapters() {
-//        List<Chapter> chapters = new ArrayList<>();
-//        Chapter chapterTest = new Chapter("1", "Test", "");
-//        for (int i = 0; i < 10; i++) {
-//            chapters.add(chapterTest);
-//        }
-//        return chapters;
-//    }
-private long downloadId;
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -175,17 +186,32 @@ private long downloadId;
         binding.buttonFirst.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AudioplayerFragment fragment = new AudioplayerFragment();
+
 
 
                 if(!ifBookFoundInDb) {
-                    mainActivity.BookToDatabase(book); //stores in DB and downloads the chapters
-
-                    ifBookFoundInDb = true;
+                    long bookId = mainActivity.BookToDatabase(book); //stores in DB and downloads the chapters
+                    mainActivity.SetupReadProgress(bookId);
                     binding.buttonFirst.setText("Play");
+
+                    // Create a new instance of the fragment
+                    //BookViewFragment fragment = new BookViewFragment();
+
+//                    // Get the current arguments
+//                    Bundle args = getArguments();
+//                    if (args != null) {
+//                        args.putBoolean("ifBookFoundInDb", true);
+//                        fragment.setArguments(args);
+//                    }
+//
+//                    // Replace the current fragment with the new one
+//                    requireActivity().getSupportFragmentManager().beginTransaction()
+//                            .replace(R.id.bookViewFragmentContainer, fragment)
+//                            .commit();
+
                 }
                 else{
-
+                    AudioplayerFragment fragment = new AudioplayerFragment();
                     //TODO: Get the last read chapter
                     Chapter data = chapters.get(0);
 
@@ -193,11 +219,6 @@ private long downloadId;
                     Bundle bundle = new Bundle();
                     bundle.putInt("id", data.getChapterId());
                     bundle.putLong("bookId", data.getBookId());
-
-//                bundle.putString("title", data.getTitle());
-//                bundle.putString("number", data.getNumber());
-//                bundle.putString("audioAddress", data.getAudioAddress());
-//                bundle.putParcelableArrayList("chapters", (ArrayList) chapters);
                     fragment.setArguments(bundle);
 
                     // Replace the current fragment with the new one

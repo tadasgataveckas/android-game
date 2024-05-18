@@ -1,25 +1,33 @@
 package com.example.audiobook_app.Adapter;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.audiobook_app.Domain.Book;
 import com.example.audiobook_app.Domain.Chapter;
+import com.example.audiobook_app.Domain.ChapterProgress;
+import com.example.audiobook_app.Domain.TimeFormatter;
 import com.example.audiobook_app.R;
 
 import java.util.List;
 
 public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterViewHolder> {
     private List<Chapter> chapters;
+    private List<ChapterProgress> chapterProgresses;
+
     private ClickListener<Chapter> clickListener;
 
-    public ChapterAdapter(List<Chapter> chapters) {
+    public ChapterAdapter(List<Chapter> chapters, List<ChapterProgress> chapterProgresses) {
         this.chapters = chapters;
+        this.chapterProgresses = chapterProgresses;
     }
     public void setOnItemClickListener(ClickListener<Chapter> chapterClickListener) {
         this.clickListener = chapterClickListener;
@@ -36,8 +44,16 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
     @Override
     public void onBindViewHolder(@NonNull ChapterViewHolder holder, int position) {
         Chapter chapter = chapters.get(position);
+        ChapterProgress chapterProgress = chapterProgresses.get(position);
+
         holder.chapterNumber.setText(chapter.getNumber());
         holder.chapterTitle.setText(chapter.getTitle());
+
+
+        holder.readProgress.setText(TimeFormatter.formatTime(chapterProgress.lastReadTimestamp));
+        if (chapterProgress.isCompleted) {
+            holder.chapterItem.setBackgroundColor(Color.parseColor("#9E9E9E"));
+        }
 
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -57,13 +73,25 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
     }
 
     static class ChapterViewHolder extends RecyclerView.ViewHolder {
+
+        ConstraintLayout chapterItem;
+
         TextView chapterNumber;
         TextView chapterTitle;
 
+        ImageView favoriteIcon;
+        TextView readProgress;
+
         public ChapterViewHolder(@NonNull View itemView) {
             super(itemView);
+            chapterItem = itemView.findViewById(R.id.chapter_item);
+
             chapterNumber = itemView.findViewById(R.id.chapter_number);
             chapterTitle = itemView.findViewById(R.id.chapter_title);
+
+            readProgress = itemView.findViewById(R.id.read_progress);
+            favoriteIcon = itemView.findViewById(R.id.isFavorite);
+
         }
     }
 }

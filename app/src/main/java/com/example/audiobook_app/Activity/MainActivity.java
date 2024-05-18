@@ -39,8 +39,11 @@ import com.example.audiobook_app.AudioplayerFragment;
 import com.example.audiobook_app.Domain.AppDatabase;
 import com.example.audiobook_app.Domain.Book;
 import com.example.audiobook_app.Domain.BookGenerator;
+import com.example.audiobook_app.Domain.BookWithChapters;
 import com.example.audiobook_app.Domain.Chapter;
+import com.example.audiobook_app.Domain.ChapterProgress;
 import com.example.audiobook_app.Domain.DownloadHandler;
+import com.example.audiobook_app.Domain.ReadingProgress;
 import com.example.audiobook_app.HomeFragment;
 import com.example.audiobook_app.ProfileFragment;
 import com.example.audiobook_app.R;
@@ -60,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
 
     private AppDatabase db; //permanent database for books
     public List<Book> books; //temporary storage for books
+
+
 
     private Uri directoryUri;
 
@@ -146,10 +151,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void BookToDatabase(Book book)
+    public long BookToDatabase(Book book)
     {
         if (book == null || book.getChapters() == null) {
-            return;
+            return -1;
         }
         DownloadBook(book);
 
@@ -160,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
             chapter.setBookId((int)bookId);
             db.chapterDAO().insert(chapter);
         }
+        return bookId;
     }
 
     private void DownloadBook(Book book) {
@@ -192,6 +198,30 @@ public class MainActivity extends AppCompatActivity {
         }
         return -1;
     }
+
+    public void SetupReadProgress(long bookId) {
+        BookWithChapters bookWithChapters = db.bookDAO().getBookWithChapters((int) bookId);
+        Book book = bookWithChapters.user;
+        book.setChapters(bookWithChapters.chapters);
+
+        if (book == null || book.getChapters() == null) {
+            return;
+        }
+
+        // Create a new ReadingProgress object
+        ReadingProgress readingProgress = new ReadingProgress();
+        readingProgress.bookId = (int)book.getId();
+        readingProgress.lastReadChapterId = 0;
+        long readProgressId = db.readingProgressDAO().insert(readingProgress);
+
+        // Create a new ChapterProgress object for each chapter
+        for (Chapter chapter : book.getChapters()) {
+            ChapterProgress chapterProgress = new ChapterProgress(chapter.getChapterId(), readProgressId);
+            db.chapterProgressDAO().insert(chapterProgress);
+        }
+
+    }
+
 
 
     public Uri GetDirectoryUri() {
@@ -226,5 +256,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
     );
+
+
 
 }

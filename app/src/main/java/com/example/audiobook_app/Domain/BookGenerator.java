@@ -45,7 +45,7 @@ public class BookGenerator {
             Log.e("BookGenerator", "Error getting books from Libra", e);
         }
 
-        executor.shutdown();  // Always remember to shut down the executor when you're done
+        executor.shutdown();
 
         if (books != null) {
             return books;
