@@ -55,6 +55,7 @@ import java.util.concurrent.Executor;
 
 public class MainActivity extends AppCompatActivity {
 
+
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
 
