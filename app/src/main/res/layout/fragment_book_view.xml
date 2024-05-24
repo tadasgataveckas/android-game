@@ -4,14 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".BookViewFragment">
+
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/black">
 
         <ImageView
             android:id="@+id/bookCover"
@@ -29,6 +33,7 @@
             android:id="@+id/pavadinimas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/white"
             android:layout_marginTop="8dp"
             android:text="@string/booktitle"
             app:layout_constraintEnd_toEndOf="parent"
@@ -39,6 +44,7 @@
             android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/white"
             android:layout_marginTop="30dp"
             android:text="@string/description"
             app:layout_constraintEnd_toEndOf="parent"
@@ -49,6 +55,7 @@
             android:id="@+id/autorius"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/white"
             android:layout_marginTop="8dp"
             android:text="@string/author"
             app:layout_constraintEnd_toEndOf="parent"
@@ -60,6 +67,7 @@
             android:id="@+id/buttonFirst"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/white"
             android:layout_marginTop="50dp"
             android:text="@string/next"
             app:layout_constraintEnd_toEndOf="parent"
@@ -70,6 +78,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/chapterList"
             android:layout_width="match_parent"
+            android:textColor="@color/white"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -79,6 +88,7 @@
         <ScrollView
             android:id="@+id/scrollView2"
             android:layout_width="match_parent"
+            android:textColor="@color/white"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
@@ -91,6 +101,7 @@
 
             <TextView
                 android:id="@+id/txt_list"
+                android:textColor="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </ScrollView>
