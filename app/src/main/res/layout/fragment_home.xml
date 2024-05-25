@@ -4,14 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/purple_200"
-    tools:context=".HomeFragment"
-    >
+    android:background="#F70B0909"
+    tools:context=".HomeFragment">
+
     <SearchView
         android:id="@+id/app_bar_search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/teal_700"
+        android:visibility="gone"
         app:menu="@menu/search_bar_menu" />
 
     <androidx.recyclerview.widget.RecyclerView
