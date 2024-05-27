@@ -148,6 +148,7 @@ public class AudioplayerFragment extends Fragment {
         try {
             mediaPlayer.setDataSource(mainActivity, GetAudioUri(directoryUri));
             mediaPlayer.prepare();
+            mediaPlayer.seekTo(readingProgress.chapterProgresses.get(currentTrack).lastReadTimestamp);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -164,6 +165,9 @@ public class AudioplayerFragment extends Fragment {
         seekBar = binding.seekBar;
         // Set SeekBar max value to the duration of the audio track
         seekBar.setMax(mediaPlayer.getDuration());
+
+
+
 
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
