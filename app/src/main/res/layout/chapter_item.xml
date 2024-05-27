@@ -5,39 +5,62 @@
     android:id="@+id/chapter_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="#F5161019"
     android:orientation="horizontal"
-    android:padding="16dp">
+    android:padding="20dp">
 
-    <TextView
-        android:id="@+id/chapter_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Chapter"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/chapter_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
         android:text="1"
+        android:textColor="#FFFFFF"
+        android:textColorHighlight="#EDEDED"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/chapter_title"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainerView"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="12dp"
+        android:background="#00120606"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/chapter_title"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/chapter_title"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="4dp"
+        android:background="#00FFFFFF"
+        android:backgroundTint="#00FFFFFF"
+        android:gravity="center_vertical"
+        android:text="Chapter"
+        android:textColor="#F4F1F1"
+        android:textColorHighlight="#FBF4F4"
+        android:textColorHint="#A58F8F"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/fragmentContainerView"
+        app:layout_constraintEnd_toEndOf="@+id/fragmentContainerView"
+        app:layout_constraintStart_toEndOf="@+id/chapter_number"
+        app:layout_constraintTop_toTopOf="@+id/fragmentContainerView" />
 
     <ImageView
         android:id="@+id/isFavorite"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/read_progress"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.545"
         app:srcCompat="@android:drawable/btn_star_big_on"
         tools:visibility="invisible" />
 
@@ -45,12 +68,13 @@
         android:id="@+id/read_progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/white"
         android:text="12:36"
+        android:textColor="#FFFFFF"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.521" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

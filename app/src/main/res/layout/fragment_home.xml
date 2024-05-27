@@ -7,21 +7,21 @@
     android:background="@color/black"
     tools:context=".HomeFragment"
     >
-    <SearchView
-        android:id="@+id/app_bar_search"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/black"
-        android:elevation="10dp"
-        android:padding="5dp"
-        app:menu="@menu/search_bar_menu" />
+<!--    <SearchView-->
+<!--        android:id="@+id/app_bar_search"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="@color/black"-->
+<!--        android:elevation="10dp"-->
+<!--        android:padding="5dp"-->
+<!--        app:menu="@menu/search_bar_menu" />-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/view1"
         android:layout_width="match_parent"
-        android:layout_height="310dp"
-        android:layout_below="@id/app_bar_search"
-        android:layout_marginTop="0dp" />
+        android:layout_height="310dp"  android:layout_marginTop="0dp" />
+<!--        android:layout_below="@id/app_bar_search"-->
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/view2"

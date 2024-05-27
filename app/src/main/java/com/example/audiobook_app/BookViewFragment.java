@@ -147,7 +147,7 @@ public class BookViewFragment extends Fragment {
      */
     private void initChapterList(List<Chapter> chapters, List<ChapterProgress> chapterProgresses) {
 
-        chapterAdapter = new ChapterAdapter(chapters, chapterProgresses);
+        chapterAdapter = new ChapterAdapter(chapters, chapterProgresses, mainActivity.getDb().favoriteChapterDAO().getAllFavorites());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         ((ChapterAdapter) chapterAdapter).setOnItemClickListener(new ClickListener<Chapter>(){

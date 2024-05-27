@@ -24,12 +24,12 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.media3.database.StandaloneDatabaseProvider;
-import androidx.media3.datasource.DefaultHttpDataSource;
-import androidx.media3.datasource.HttpDataSource;
-import androidx.media3.datasource.cache.Cache;
-import androidx.media3.datasource.cache.NoOpCacheEvictor;
-import androidx.media3.datasource.cache.SimpleCache;
+//import androidx.media3.database.StandaloneDatabaseProvider;
+//import androidx.media3.datasource.DefaultHttpDataSource;
+//import androidx.media3.datasource.HttpDataSource;
+//import androidx.media3.datasource.cache.Cache;
+//import androidx.media3.datasource.cache.NoOpCacheEvictor;
+//import androidx.media3.datasource.cache.SimpleCache;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -130,26 +130,26 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.search_bar_menu,menu);
-        MenuItem menuItem = menu.findItem(R.id.app_bar_search);
-        SearchView searchView = (SearchView) menuItem.getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                //imp later
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                //imp later
-                return false;
-            }
-
-        });
-        return super.onCreateOptionsMenu(menu);
-    }
+//    public boolean onCreateOptionsMenu(Menu menu){
+//        getMenuInflater().inflate(R.menu.search_bar_menu,menu);
+//        //MenuItem menuItem = menu.findItem(R.id.app_bar_search);
+//        //SearchView searchView = (SearchView) menuItem.getActionView();
+//        //searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                //imp later
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                //imp later
+//                return false;
+//            }
+//
+//        });
+//        return super.onCreateOptionsMenu(menu);
+//    }
 
 
     public long BookToDatabase(Book book)

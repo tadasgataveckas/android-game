@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.audiobook_app.Domain.Book;
 import com.example.audiobook_app.Domain.Chapter;
 import com.example.audiobook_app.Domain.ChapterProgress;
+import com.example.audiobook_app.Domain.FavoriteChapter;
 import com.example.audiobook_app.Domain.TimeFormatter;
 import com.example.audiobook_app.R;
 
@@ -22,12 +23,14 @@ import java.util.List;
 public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterViewHolder> {
     private List<Chapter> chapters;
     private List<ChapterProgress> chapterProgresses;
+    private List<FavoriteChapter> favChapters;
 
     private ClickListener<Chapter> clickListener;
 
-    public ChapterAdapter(List<Chapter> chapters, List<ChapterProgress> chapterProgresses) {
+    public ChapterAdapter(List<Chapter> chapters, List<ChapterProgress> chapterProgresses, List<FavoriteChapter> favChapters) {
         this.chapters = chapters;
         this.chapterProgresses = chapterProgresses;
+        this.favChapters = favChapters;
     }
     public void setOnItemClickListener(ClickListener<Chapter> chapterClickListener) {
         this.clickListener = chapterClickListener;
@@ -45,6 +48,22 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
     public void onBindViewHolder(@NonNull ChapterViewHolder holder, int position) {
         Chapter chapter = chapters.get(position);
         ChapterProgress chapterProgress = chapterProgresses.get(position);
+        FavoriteChapter favChapter = null;
+        for (FavoriteChapter favoriteChapter : favChapters) {
+            if(chapter.getChapterId() == favoriteChapter.chapterId)
+            {
+                favChapter = favoriteChapter;
+                break;
+            }
+        }
+
+        if(favChapter != null)
+        {
+            holder.favoriteIcon.setVisibility(View.VISIBLE);
+        }
+        else {
+            holder.favoriteIcon.setVisibility(View.INVISIBLE);
+        }
 
         holder.chapterNumber.setText(chapter.getNumber());
         holder.chapterTitle.setText(chapter.getTitle());
@@ -90,6 +109,7 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
             chapterTitle = itemView.findViewById(R.id.chapter_title);
 
             readProgress = itemView.findViewById(R.id.read_progress);
+
             favoriteIcon = itemView.findViewById(R.id.isFavorite);
 
         }
